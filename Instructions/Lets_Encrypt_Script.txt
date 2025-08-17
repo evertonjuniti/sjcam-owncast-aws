@@ -1,0 +1,9 @@
+# Remember to change the [YOUR_ROUTE_53_SUB_DOMAIN] tag with your Route 53 sub YOUR_ROUTE_53_SUB_DOMAIN
+# Remember to change the [YOUR_EMAIL_ADDRESS] tag with your e-mail address
+
+sudo apt update
+sudo apt install -y certbot python3-certbot-dns-route53
+sudo certbot certonly --dns-route53 --dns-route53-propagation-seconds 30 -d [YOUR_ROUTE_53_SUB_DOMAIN] --agree-tos --non-interactive --email [YOUR_EMAIL_ADDRESS]
+sudo mkdir -p /etc/haproxy/certs
+sudo bash -c 'cat /etc/letsencrypt/live/[YOUR_ROUTE_53_SUB_DOMAIN]/fullchain.pem /etc/letsencrypt/live/[YOUR_ROUTE_53_SUB_DOMAIN]/privkey.pem > /etc/haproxy/certs/[YOUR_ROUTE_53_SUB_DOMAIN].pem'
+sudo chmod 600 /etc/haproxy/certs/[YOUR_ROUTE_53_SUB_DOMAIN].pem

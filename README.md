@@ -17,6 +17,6 @@
 ## Desenho da solução | Solution design
 ![Owncast.drawio.png](/Images/Owncast.drawio.png)
 
-> [pt-br] Tudo que estiver escrito em vermelho são dados de exemplo que usei em meu ambiente ou são placeholders para que você substitua pelo valor correto do seu ambiente AWS
+> [pt-br] Tudo que estiver escrito em vermelho são dados de exemplo que usei em meu ambiente ou são placeholders para que você substitua pelo valor correto do seu ambiente AWS. Talvez seja melhor você fazer o download da imagem acima e abrir em outra ferramenta (que não o browser), dado que são muitos detalhes contidos na imagem
 
-> [en-us] Everything written in red is either example data that I used in my environment or are placeholders for you to replace with the correct value for your AWS environment.
+> [en-us] Everything written in red is either example data that I used in my environment or are placeholders for you to replace with the correct value for your AWS environment. It might be best to download the image above and open it in another tool (other than the browser), given that there are many details contained in the image
