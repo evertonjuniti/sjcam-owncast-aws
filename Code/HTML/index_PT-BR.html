@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <title>Owncast Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #111;
+        color: #eee;
+        font-family: Arial, sans-serif;
+      }
+      #auth, #playerArea {
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+      }
+      #loginBtn, #logoutBtn, #instanceBtn, #consultarStatusBtn, #refreshBtn {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        background-color: #4285F4;
+        color: #fff;
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+      #logoutBtn { background-color:#DB4437; position:absolute; top:1rem; right:1rem; display:none; }
+      #playerArea { display: none; margin-top: 2rem; }
+      select {
+        font-size: 1.1rem;
+        padding: 0.6rem;
+        margin: 1rem auto;
+        width: 90%;
+        max-width: 300px;
+        border-radius: 0.4rem;
+        border: 1px solid #555;
+        background-color: #222;
+        color: #eee;
+      }
+      video {
+        width: 100%;
+        max-width: 800px;
+        border-radius: 0.5rem;
+        background-color: #000;
+      }
+      .field { margin: 0.5rem 0; }
+      input[type="email"], input[type="password"] {
+        width: 90%; max-width: 320px;
+        padding: 0.6rem; border-radius: 0.4rem;
+        border: 1px solid #555; background:#222; color:#eee;
+      }
+      .hint { opacity: .8; font-size: .9rem; margin-top:.5rem;}
+    </style>
+  </head>
+  <body>
+    <button id="logoutBtn">Logout</button>
+    <div id="auth">
+      <h2>Login</h2>
+      <div class="field">
+        <input id="email" type="email" placeholder="Seu e-mail" autocomplete="username" />
+      </div>
+      <div class="field">
+        <input id="password" type="password" placeholder="Sua senha" autocomplete="current-password" />
+      </div>
+      <button id="loginBtn">Entrar</button>
+      <div class="hint">Somente usuários autorizados podem acessar.</div>
+    </div>
+
+    <div id="serverArea" style="display:none">
+      <h2>Servidor Owncast</h2>
+      <p>Status do servidor: <label id="serverStatus">Carregando...</label> <button id="consultarStatusBtn">Consultar status do servidor</button></p>
+      <br />
+      <button id="instanceBtn">Ligar servidor</button>
+    </div>
+    <br />
+    <div id="playerArea" style="display:none">
+      <button id="refreshBtn" style="margin-left:0.5rem;">Atualizar lista de vídeos</button>
+      <label for="videoSelector" style="margin: 0 0.5rem 0 1rem;">Vídeo:</label>
+      <select id="videoSelector"></select>
+      <br />
+      <video id="video" controls crossorigin="use-credentials" preload="auto"></video>
+    </div>
+
+    <script type="module">
+      import { Amplify } from 'https://esm.sh/aws-amplify@6.15.5';
+      import {
+              signIn,
+              signOut,
+              confirmSignIn,
+              getCurrentUser,
+              fetchAuthSession
+            } from 'https://esm.sh/aws-amplify@6.15.5/auth';
+      const API_BASE = 'https://[YOUR_OWNCAST_API_BASE_URL]';
+
+      // ================== CONFIG COGNITO ==================
+      const COGNITO_REGION = "[YOUR_COGNITO_REGION]";
+      const USER_POOL_ID = "[YOUR_COGNITO_USER_POOL_ID]";
+      const USER_POOL_WEB_CLIENT_ID = "[YOUR_COGNITO_USER_POOL_WEB_CLIENT_ID]";
+      // ====================================================
+
+      Amplify.configure({
+        Auth: {
+          Cognito: {
+            userPoolId: USER_POOL_ID,
+            userPoolClientId: USER_POOL_WEB_CLIENT_ID,
+            region: COGNITO_REGION,
+            loginWith: { email: true, username: false, phone: false }
+          }
+        }
+      });
+
+      const logoutBtn           = document.getElementById('logoutBtn');
+      const loginBtn            = document.getElementById('loginBtn');
+      const emailInput          = document.getElementById('email');
+      const passwordInput       = document.getElementById('password');
+      const authDiv             = document.getElementById('auth');
+      const serverArea          = document.getElementById('serverArea');
+      const serverStatus        = document.getElementById('serverStatus');
+      const instanceBtn         = document.getElementById('instanceBtn');
+      const consultarStatusBtn  = document.getElementById('consultarStatusBtn');
+      const playerArea          = document.getElementById('playerArea');
+      const videoEl             = document.getElementById('video');
+      const selector            = document.getElementById('videoSelector');
+      const refreshBtn          = document.getElementById('refreshBtn');
+      let hlsInstance;
+      let currentServerStatus = null;
+
+      async function getIdToken() {
+        try {
+          const { tokens } = await fetchAuthSession();
+          return tokens?.idToken?.toString() ?? null;
+        } catch {
+          return null;
+        }
+      }
+
+      async function showAuthedUI() {
+        authDiv.style.display    = 'none';
+        logoutBtn.style.display  = 'block';
+        serverArea.style.display = 'block';
+        playerArea.style.display = 'block';
+      }
+      function showLoggedOutUI() {
+        authDiv.style.display    = 'block';
+        logoutBtn.style.display  = 'none';
+        serverArea.style.display = 'none';
+        playerArea.style.display = 'none';
+      }
+
+      (async () => {
+        try {
+          const { tokens } = await fetchAuthSession();
+          if (tokens?.idToken) {
+            await showAuthedUI();
+            await updateServerStatus();
+            await populateVideos();
+          } else {
+            showLoggedOutUI();
+          }
+        } catch {
+          showLoggedOutUI();
+        }
+      })();
+
+      logoutBtn.onclick = async () => {
+        try {
+          await signOut();
+          showLoggedOutUI();
+        } catch (e) {
+          alert('Erro ao deslogar: ' + (e && e.message ? e.message : e));
+        }
+      };
+
+      loginBtn.onclick = async () => {
+        const email = emailInput.value.trim();
+        const pass  = passwordInput.value;
+        if (!email || !pass) { alert('Informe e-mail e senha'); return; }
+        try {
+          const session0 = await fetchAuthSession().catch(() => null);
+          if (session0?.tokens?.idToken) {
+            await showAuthedUI();
+            await updateServerStatus();
+            await populateVideos();
+            return;
+          }
+
+          const res = await signIn({ username: email, password: pass });
+
+          if (res?.nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
+            const newPass = prompt('Defina a sua NOVA senha (requisitos do Cognito se aplicam):');
+            if (!newPass) return;
+
+            await confirmSignIn({challengeResponse: newPass});
+          }
+          const { tokens } = await fetchAuthSession();
+          if (!tokens?.idToken) throw new Error('Falha ao obter sessão após login');
+
+          await showAuthedUI();
+          await updateServerStatus();
+          await populateVideos();
+        } catch (e) {
+          const msg = e?.message || String(e);
+          if (/already\s*signed\s*in/i.test(msg) || e?.name === 'UserAlreadyAuthenticatedException') {
+            await showAuthedUI();
+            await updateServerStatus();
+            await populateVideos();
+            return;
+          }
+          if (e?.name === 'UserNotConfirmedException') {
+            alert('Erro ao autenticar: Usuário não confirmado no Cognito.');
+          } else if (e?.name === 'InvalidPasswordException') {
+            alert('Erro ao autenticar: A nova senha não atende à política do Cognito.');
+          } else {
+            alert('Erro ao autenticar: ' + msg);
+          }
+        }
+      };
+
+      refreshBtn.addEventListener('click', async () => {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = 'Atualizando…';
+        try {
+          await populateVideos();
+        } finally {
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = 'Atualizar lista de vídeos';
+        }
+      });
+
+      selector.addEventListener('change', updateStream);
+      consultarStatusBtn.addEventListener('click', updateServerStatus);
+
+      instanceBtn.addEventListener('click', async () => {
+        if (!currentServerStatus) return;
+        instanceBtn.disabled = true;
+        try {
+          const token = await getIdToken();
+          if (!token) { alert('Não autenticado'); return; }
+          let url;
+          if (currentServerStatus === "running") {
+            url = `${API_BASE}/instance/turnoff`;
+          } else {
+            url = `${API_BASE}/instance/turnon`;
+          }
+          const response = await fetch(url, {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`Erro HTTP ${response.status}: ${text}`);
+          }
+          await updateServerStatus();
+        } catch (e) {
+          alert("Erro ao alterar status do servidor: " + (e && e.message ? e.message : e));
+        } finally {
+          instanceBtn.disabled = false;
+        }
+      });
+
+      async function updateServerStatus() {
+        serverStatus.textContent = "Carregando...";
+        try {
+          const token = await getIdToken();
+          if (!token) {
+            serverStatus.textContent = "Não autenticado";
+            instanceBtn.textContent = "Ligar servidor";
+            currentServerStatus = null;
+            return;
+          }
+          const res = await fetch(`${API_BASE}/instance`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (!res.ok) {
+            serverStatus.textContent = "Erro ao consultar status";
+            instanceBtn.textContent = "Ligar servidor";
+            currentServerStatus = null;
+            return;
+          }
+          const data = await res.json();
+          const status = data.status;
+          currentServerStatus = status;
+          serverStatus.textContent = status;
+          instanceBtn.textContent = (status === "running") ? "Desligar servidor" : "Ligar servidor";
+        } catch (e) {
+          serverStatus.textContent = "Erro ao consultar status";
+          instanceBtn.textContent = "Ligar servidor";
+          currentServerStatus = null;
+        }
+      }
+
+      async function populateVideos() {
+        selector.innerHTML = "";
+
+        const token = await getIdToken();
+        if (!token) { alert("Não autenticado"); return; }
+
+        const res = await fetch(`${API_BASE}/list-videos`, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) {
+          console.error('Erro ao listar vídeos', res.status);
+          return;
+        }
+        let videos = await res.json();
+        videos.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+        const selectOpt = document.createElement('option');
+        selectOpt.value       = 'selecione';
+        selectOpt.textContent = 'Selecione um vídeo';
+        selector.appendChild(selectOpt);
+
+        const liveOpt = document.createElement('option');
+        liveOpt.value       = 'stream';
+        liveOpt.textContent = 'Live';
+        selector.appendChild(liveOpt);
+
+        for (const v of videos) {
+          const opt = document.createElement('option');
+          opt.value       = v.videoId;
+          opt.textContent = v.dateTime;
+          selector.appendChild(opt);
+        }
+
+        selector.value = 'selecione';
+        updateStream();
+      }
+
+      function updateStream() {
+        const videoId = selector.value;
+        loadStream(videoId);
+      }
+
+      async function loadStream(videoId) {
+        if (videoId === "selecione") return;
+
+        const token = await getIdToken();
+        if (!token) { alert("Não autenticado"); return; }
+
+        const authResp = await fetch(
+          `${API_BASE}/auth-cookies?videoId=${encodeURIComponent(videoId)}`,
+          {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: 'include'
+          }
+        );
+        if (!authResp.ok) {
+          console.error("Erro ao obter cookies do CloudFront:", authResp.status);
+          return;
+        }
+
+        const manifestUrl = `${API_BASE}/playlist/${encodeURIComponent(videoId)}.m3u8`;
+
+        if (Hls.isSupported()) {
+          videoEl.style.display  = 'block';
+          if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+
+          const hls = new Hls({
+            startFragPrefetch: true,
+            maxBufferLength: 60,
+            maxMaxBufferLength: 120,
+            maxBufferSize: 100 * 1000 * 1000,
+            maxBufferHole: 0.5,
+            xhrSetup: (xhr) => {
+              xhr.withCredentials = true;
+              xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
+          });
+          hls.loadSource(manifestUrl);
+          hls.attachMedia(videoEl);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoEl.play().catch(e => console.error("Erro ao iniciar playback:", e));
+          });
+          hlsInstance = hls;
+        } else if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+          videoEl.style.display = 'block';
+        } else {
+          console.error('HLS não suportado neste navegador.');
+        }
+      }
+    </script>
+  </body>
+</html>
