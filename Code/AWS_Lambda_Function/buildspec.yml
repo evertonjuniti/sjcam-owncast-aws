@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "Installing dependencies..."
+      - pip install rsa --upgrade --target src/
+
+  build:
+    commands:
+      - echo "Packaging Lambda…"
+      - cd src
+      - zip -r9 ../lambda_package.zip . 
+      - cd ..
+      - echo "Deploying to Lambda…"
+      - aws lambda update-function-code --function-name [YOUR_LAMBDA_FUNCTION_NAME] --zip-file fileb://lambda_package.zip
+
+artifacts:
+  files:
+    - lambda_package.zip
