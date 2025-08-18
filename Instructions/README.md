@@ -9,6 +9,7 @@
 ### Resumo dos passos de configuração | Summary of configuration steps
 
 - [Configuração de rede | Network configuration](#network-configuration)
+- [Criação das instâncias EC2 | Creating EC2 instances](#instance-creation)
 
 <a name="network-configuration"></a>
 
@@ -188,5 +189,64 @@ Depois de fazer as instalações, desfaça todos esses itens acima citados para 
 These steps above will enable an internet connection for instance security updates and any installations.
 
 After completing the installations, undo all of the above items to maintain greater security when accessing the instance in the Private Subnet.
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="instance-creation"></a>
+
+#### Criação das instâncias EC2 | Creating EC2 instances
+![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+
+>[pt-br]
+
+- Instância EC2 para o servidor de Proxy (utilizando HAProxy)
+  - Application and OS Image: Ubuntu
+  - Architecture: 64-bit
+  - Instance Type: t3.micro
+  - Key pair: pode selecionar alguma que já tenha, se não tiver crie um novo par
+  - Network settings:
+    - VPC: VPC default (seguindo o exemplo deste guia)
+    - Subnet: a Subnet Pública que você criou
+    - Security Group: escolha o Security Group que você criou para uso do Proxy
+  - Demais configurações pode manter o default
+  - Na guia de Elastic IP, crie um e associe a esta instância
+- Instância EC2 para o servidor do Owncast
+  - Application and OS Image: Ubuntu
+  - Architecture: 64-bit
+  - Instance Type: t3.small
+  - Key pair: pode selecionar alguma que já tenha (por exemplo a que atribuiu à instância EC2 de Proxy), ou crie um novo par
+  - Network settings:
+    - VPC: VPC default (seguindo o exemplo deste guia)
+    - Subnet: a Subnet Privada que você criou
+    - Security Group: escolha o Security Group que você criou para uso do Owncast
+  - Demais configurações pode manter o default
+
+##### Observações importantes: Tome nota do Instance ID de ambas as instâncias EC2 e do endereço IP elástico
+
+>[en-us]
+
+- EC2 instance for the Proxy server (using HAProxy)
+  - Application and OS Image: Ubuntu
+  - Architecture: 64-bit
+  - Instance Type: t3.micro
+  - Key pair: You can select one you already have; if you don't have one, create a new pair
+  - Network settings:
+    - VPC: Default VPC (following the example in this guide)
+    - Subnet: The Public Subnet you created
+    - Security Group: Choose the Security Group you created for Proxy use
+  - Other settings can remain at the default
+  - In the Elastic IP tab, create one and associate it with this instance
+- EC2 instance for the Owncast server
+  - Application and OS Image: Ubuntu
+  - Architecture: 64-bit
+  - Instance Type: t3.small
+  - Key pair: You can select one you already have (for example, the one you assigned to the Proxy EC2 instance), or create a new pair
+  - Network settings:
+    - VPC: Default VPC (following the example in this guide)
+    - Subnet: The Private Subnet you created
+    - Security Group: Choose the Security Group you created. You created it for Owncast use
+  - You can keep the other settings at the default
+
+##### Important Notes: Take note of the Instance ID of both EC2 instances and the Elastic IP address
 
 [Retornar ao resumo | Return to summary](#summary)
