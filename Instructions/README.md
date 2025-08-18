@@ -36,7 +36,71 @@
     - Destination: [Alias do S3] | Target: [VPC Endpoint S3]
     - Destination: 172.31.0.0/16 | Target: local
   - Observação: o Alias do S3 pode ser obtido no menu "Managed prefix lists"
+  - Faça a associação desta Route Table à Subnet Pública criada
+- Crie um NACL (Network Access Control List) para a subnet pública
+  - Regras de entrada
+    - SSH (porta 22), Source: 0.0.0.0/0
+    - HTTPS (porta 443), Source: 0.0.0.0/0
+    - Custom TCP (porta 1935), Source: 0.0.0.0/0
+    - Custom TCP (range de portas 1024-65535), Source: 172.31.100.0/28
+  - Regras de saída
+    - HTTP* (porta 8080), Destination: 172.31.100.0/28
+    - Custom TCP (porta 1935), Destination: 172.31.100.0/28
+    - HTTP (porta 80), Destination: 0.0.0.0/0
+    - HTTPS (porta 443), Destination: 0.0.0.0/0
+    - DNS (UDP) (porta 53), Destination: 0.0.0.0/0
+    - Custom TCP (range e portas 1024-65535), Destination: 0.0.0.0/0
+  - Associe este NACL à Subnet Pública criada
+- Crie um NACL (Network Access Control List) para a subnet privada
+  - Regras de entrada
+    - Custom TCP (porta 1935), Source: 172.31.101.0/28
+    - HTTP* (porta 8080), Source: 172.31.101.0/28
+    - Custom TCP (range de portas 1024-65535), Source: 0.0.0.0/0
+  - Regras de saída
+    - Custom TCP (range de portas 1024-65535), Destination: 172.31.101.0/28
+    - Custom TCP (range de portas 1024-65535), Destination: 0.0.0.0/0
+    - HTTPS (porta 443), Destination: 0.0.0.0/0
   - Faça a associação desta Route Table à Subnet Privada criada
+- Crie um Security Group (será usado na instância de Proxy)
+  - Regras de entrada
+    - HTTPS (porta 443), Source: 0.0.0.0/0
+    - Custom TCP (porta 1935), Source: 0.0.0.0/0
+    - Custom TCP (range de portas 1024-65535), Source: 172.31.100.0/28
+  - Regras de saída
+    - Custom TCP (porta 1935), Destination: 172.31.100.0/28
+    - Custom TCP (porta 8080), Destination: 172.31.100.0/28
+- Crie um Security Group (será usado na instância do Owncast)
+  - Regras de entrada
+    - Custom TCP (porta 1935), Source: 172.31.101.0/28
+    - Custom TCP (range de portas 1024-65535), Source: [Alias do S3]
+    - Custom TCP (porta 8080), Source: 172.31.101.0/28
+  - Regras de saída
+    - Custom TCP (range de portas 1024-65535), Destination: 172.31.101.0/28
+    - HTTPS (porta 443), Destination: [Alias do S3]
+- Crie um Security Group (será usado para manutenção das instâncias)
+  - Regras de entrada
+    - SSH (porta 22), Source: 0.0.0.0/0
+  - Regras de saída
+    - DNS (UDP) (porta 53), Destination: 0.0.0.0/0
+    - HTTP (porta 80), Destination: 0.0.0.0/0
+    - HTTPS (porta 443), Destination: 0.0.0.0/0
+
+##### Observação importante: para fazer a manutenção e instalação de software na instância EC2 na Subnet Privada serão necessários passos adicionais, cuja recomendação é fazer somente em momento de manutenção, depois desfaça os itens abaixo descritos
+- Inclua na Route Table associado à Subnet Privada:
+  - Uma rota Destination: 0.0.0.0/0, Target: Internet Gateway
+- Inclua na NACL associada à Subnet Privada:
+  - Regra de entrada
+    - SSH (porta 22), Source: 0.0.0.0/0
+  - Regra de saída
+    - HTTP (porta 80), Destination: 0.0.0.0/0
+    - DNS (UDP) (porta 53), Destination: 0.0.0.0/0
+- Associe à instância EC2 da Subnet Privada:
+  - O Security Group de manutenção de instâncias
+  - Um IP público do tipo Elastic IP
+
+Esses passos acima farão com que seja possível a conexão com a internet para fazer a atualização de segurança da instância e eventuais instalações.
+
+Depois de fazer as instalações, desfaça todos esses itens acima citados para manter uma maior segurança do acesso à instância na Subnet Privada.
 
 >[en-us]
 - I chose the sa-east-1 region for my structure, you can choose whatever you prefer
@@ -60,5 +124,69 @@
     - Destination: 172.31.0.0/16 | Target: local
   - Note: The S3 Alias can be found in the "Managed prefix lists" menu
   - Associate this route table with the private subnet you created
+- Create a NACL (Network Access Control List) for the public subnet
+  - Inbound Rules
+    - SSH (port 22), Source: 0.0.0.0/0
+    - HTTPS (port 443), Source: 0.0.0.0/0
+    - Custom TCP (port 1935), Source: 0.0.0.0/0
+    - Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
+  - Outbound Rules
+    - HTTP* (port 8080), Destination: 172.31.100.0/28
+    - Custom TCP (port 1935), Destination: 172.31.100.0/28
+    - HTTP (port 80), Destination: 0.0.0.0/0
+    - HTTPS (port 443), Destination: 0.0.0.0/0
+    - DNS (UDP) (port 53), Destination: 0.0.0.0/0
+    - Custom TCP (range and ports 1024-65535), Destination: 0.0.0.0/0
+  - Associate this NACL with the created Public Subnet
+- Create a NACL (Network Access Control List) for the private subnet
+  - Inbound Rules
+    - Custom TCP (port 1935), Source: 172.31.101.0/28
+    - HTTP* (port 8080), Source: 172.31.101.0/28
+    - Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
+  - Outbound Rules
+    - Custom TCP (port range 1024-65535), Destination: 172.31.101.0/28
+    - Custom TCP (port range 1024-65535), Destination: 0.0.0.0/0
+    - HTTPS (port 443), Destination: 0.0.0.0/0
+  - Associate this Route Table with the created Private Subnet
+- Create a Security Group (will be used on the Proxy instance)
+  - Inbound Rules
+    - HTTPS (port 443), Source: 0.0.0.0/0
+    - Custom TCP (port 1935), Source: 0.0.0.0/0
+    - Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
+  - Outbound Rules
+    - Custom TCP (port 1935), Destination: 172.31.100.0/28
+    - Custom TCP (port 8080), Destination: 172.31.100.0/28
+- Create a Security Group (will be used on the Owncast instance)
+  - Inbound Rules
+    - Custom TCP (port 1935), Source: 172.31.101.0/28
+    - Custom TCP (port range 1024-65535), Source: [S3 Alias]
+    - Custom TCP (port 8080), Source: 172.31.101.0/28
+  - Outbound Rules
+    - Custom TCP (port range 1024-65535), Destination: 172.31.101.0/28
+    - HTTPS (port 443), Destination: [S3 Alias]
+- Create a Security Group (will be used for instance maintenance)
+  - Inbound Rules
+    - SSH (port 22), Source: 0.0.0.0/0
+  - Outbound Rules
+    - DNS (UDP) (port 53), Destination: 0.0.0.0/0
+    - HTTP (port 80), Destination: 0.0.0.0/0
+    - HTTPS (port 443), Destination: 0.0.0.0/0
+
+##### Important note: to perform maintenance and software installation on the EC2 instance in the Private Subnet, additional steps will be required. We recommend that you only do these during maintenance, then undo the items described below
+- Include the following in the Route Table associated with the Private Subnet:
+  - A route Destination: 0.0.0.0/0, Target: Internet Gateway
+- Include the following in the NACL associated with the Private Subnet:
+  - Inbound Rule
+    - SSH (port 22), Source: 0.0.0.0/0
+  - Outbound Rule
+    - HTTP (port 80), Destination: 0.0.0.0/0
+    - DNS (UDP) (port 53), Destination: 0.0.0.0/0
+- Associate it with the EC2 instance in the Private Subnet:
+  - The instance maintenance security group
+  - An Elastic IP public IP
+
+These steps above will enable an internet connection for instance security updates and any installations.
+
+After completing the installations, undo all of the above items to maintain greater security when accessing the instance in the Private Subnet.
 
 [Retornar ao resumo | Return to summary](#summary)
