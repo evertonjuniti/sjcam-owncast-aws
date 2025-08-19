@@ -12,6 +12,7 @@
 - [Criação do Bucket S3 | Creating S3 an Bucket](#bucket-creation)
 - [Criação das Secrets | Creation of Secrets](#secrets-creation)
 - [Criação das instâncias EC2 | Creating EC2 instances](#instance-creation)
+- [Configuração de policies, roles e usuário do IAM | Configuring IAM policies, roles, and users](iam-configuration)
 
 <a name="network-configuration"></a>
 
@@ -294,6 +295,8 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
     - Na próxima página, em Secret name dê um nome para a secret, no exemplo aqui se chama CloudFrontPrivateKey (sim, o nome é ruim, mas é o que eu havia criado na época)
     - Ná próxima página pode manter os valores default, já que não precisa rotacionar essas secrets
 
+##### Observações importantes: Tome nota do nome de ambas essas secrets que você acabou de criar
+
 >[en-us]
 
 There is a prerequisite for one of the secrets, which involves generating an RSA private and public key pair.
@@ -325,6 +328,8 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
     - Encryption key: aws/secretsmanager
     - On the next page, under Secret name, give the secret a name. In the example here, it's called CloudFrontPrivateKey (yes, the name is bad, but it's what I created at the time)
     - On the next page, you can keep the default values, since you don't need to rotate these secrets
+
+##### Important Notes: Take note of the name of both these secrets you just created
 
 [Retornar ao resumo | Return to summary](#summary)
 
@@ -384,5 +389,58 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - You can keep the other settings at the default
 
 ##### Important Notes: Take note of the Instance ID of both EC2 instances and the Elastic IP address
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="iam-configuration"></a>
+
+#### Configuração de policies, roles e usuário do IAM | Configuring IAM policies, roles, and users
+![Owncast-IAM.drawio.svg](/Images/Owncast-IAM.drawio.svg)
+
+>[pt-br]
+
+- No menu Policies, crie uma nova Policy, esta será a policy principal para o Owncast
+  - Ao invés de selecionar com o editor Visual, mude para o editor JSON
+  - Use o template do arquivo deste repositório em [Code -> AWS_IAM -> Owncast_Policy.txt](Code/AWS_IAM/Owncast_Policy.txt)
+    - Altere a tag [OwncastSegmentsBucketName] pelo nome do bucket que você criou para os arquivos de segmento de vídeo
+    - Altere a tag [YourRegion] pela mesma região que está sua VPC e Subnet
+    - Altere a tag [YourAccount] pelo ID de identificação da sua conta AWS (você pode ver isso na parte superior direito do Console da AWS, use somente os números)
+    - Altere a tag [ProxyInstanceId] pelo ID da instância EC2 referente ao Proxy da Subnet Pública (lembra que eu indiquei você anotar essa informação!)
+    - Altere a tag [OwncastInstanceId] pelo ID da instância EC2 referente ao Owncast da Subnet Privada (lembra que eu indiquei você anotar essa informação!)
+    - Altere o nome da secret CloudFrontPrivateKey caso você tenha criado com outro nome na Secrets Manager (lembra que eu indiquei você anotar essa informação!)
+    - Altere o nome da secret AllowedEmails caso você tenha criado com outro nome na Secrets Manager (lembra que eu indiquei você anotar essa informação!)
+    - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastPolicy)
+
+[Opcional] Crie uma policy para poder gerar um certificado digital via Let's Encrypt para a instância de Proxy
+- Esta policy é para o caso de você ter um domínio no Route 53 e quiser validar o domínio com certificado digital ao chamar o Proxy pelo domínio
+  - Ao invés de selecionar com o editor Visual, mude para o editor JSON
+  - Use o template do arquivo deste repositório em [Code -> AWS_IAM -> Route53Certificate_Policy.txt](Code/AWS_IAM/Route53Certificate_Policy.txt)
+    - Altere a tag [YourHostedZoneId] pelo Id da sua Hosted Zone no Route 53
+    - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastPolicy)
+
+##### Observações importantes: Tome nota do nome das Policies criadas
+
+>[en-us]
+
+- In the Policies menu, create a new Policy, this will be the main policy for Owncast
+  - Instead of selecting with the Visual editor, switch to the JSON editor.
+  - Use the template file from this repository in [Code -> AWS_IAM -> Owncast_Policy.txt](Code/AWS_IAM/Owncast_Policy.txt)
+    - Change the [OwncastSegmentsBucketName] tag to the name of the bucket you created for the video segment files.
+    - Change the [YourRegion] tag to the same region as your VPC and Subnet.
+    - Change the [YourAccount] tag to your AWS account ID (you can see this in the upper right corner of the AWS Console; use only numbers).
+    - Change the [ProxyInstanceId] tag to the ID of the EC2 instance for the Public Subnet Proxy (remember I told you to write this down!)
+    - Change the [OwncastInstanceId] tag to the ID of the EC2 instance for the Private Subnet Owncast (Remember, I told you to write this down!)
+    - Change the name of the CloudFrontPrivateKey secret if you created it with a different name in Secrets Manager (remember, I told you to write this down!)
+    - Change the name of the AllowedEmails secret if you created it with a different name in Secrets Manager (remember, I told you to write this down!)
+    - On the next page, give your policy a name (in my case it was OwncastPolicy)
+
+[Optional] Create a policy to generate a digital certificate via Let's Encrypt for the Proxy instance.
+- This policy is for if you have a domain in Route 53 and want to validate the domain with a digital certificate when calling the Proxy through the domain.
+  - Instead of selecting with the Visual editor, switch to the JSON editor.
+  - Use the template file from this repository in [Code -> AWS_IAM -> Route53Certificate_Policy.txt](Code/AWS_IAM/Route53Certificate_Policy.txt)
+    - Change the [YourHostedZoneId] tag to the ID of your Hosted Zone in Route 53.
+    - On the next page, give your policy a name (in my case, it was OwncastPolicy).
+
+##### Important notes: Take note of the name of the Policies created
 
 [Retornar ao resumo | Return to summary](#summary)
