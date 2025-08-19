@@ -9,6 +9,8 @@
 ### Resumo dos passos de configuração | Summary of configuration steps
 
 - [Configuração de rede | Network configuration](#network-configuration)
+- [Criação do Bucket S3 | Creating S3 an Bucket](#bucket-creation)
+- [Criação das Secrets | Creation of Secrets](#secrets-creation)
 - [Criação das instâncias EC2 | Creating EC2 instances](#instance-creation)
 
 <a name="network-configuration"></a>
@@ -189,6 +191,140 @@ Depois de fazer as instalações, desfaça todos esses itens acima citados para 
 These steps above will enable an internet connection for instance security updates and any installations.
 
 After completing the installations, undo all of the above items to maintain greater security when accessing the instance in the Private Subnet.
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="bucket-creation"></a>
+
+#### Criação do Bucket S3 | Creating an S3 Bucket
+![Owncast-Bucket.drawio.svg](/Images/Owncast-Bucket.drawio.svg)
+
+>[pt-br]
+
+- [Opcional] Crie um Bucket S3 na mesma Region da sua estrutura de Redes (onde você tem seu VPC e suas Subnets) para servir seu site (se tiver um), isso poderá ser utilizado para a página HTML deste repositório para acesso aos vídeos gravados
+  - Bucket name: Precisa ser um nome único globalmente, algum que tenha o significado de hospedagem do seu website estático
+  - Object Ownership: ACLs disabled (recommended)
+  - Block public access: Block all public access
+  - Bucket versioning: Disable
+  - Default encryption: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+  - Bucket Key: Enable
+  - Demais configurações pode deixar o default
+  - Após criar o bucket, vá para a aba Properties desse bucket
+    - Edite a configuração para habilitar a opção S3 static website hosting
+      - Hosting type: Host a static website
+      - Index document: index.html
+
+- Crie um Bucket S3 na mesma Region da sua estrutura de Redes (onde você tem seu VPC e suas Subnets) para armazenar os segmentos de vídeo que serão gravados
+  - Bucket name: Precisa ser um nome único globalmente, algum que tenha o significado de armazenamento dos segmentos de vídeo
+  - Object Ownership: ACLs disabled (recommended)
+  - Block public access: Block all public access
+  - Bucket versioning: Disable
+  - Default encryption: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+  - Bucket Key: Enable
+  - Demais configurações pode deixar o default
+  - Após criar o bucket, vá para a aba Permissions desse bucket
+    - Bucket policy: será configurado mais pra frente
+    - Cross-origin resource sharing (CORS): use o template em [Code -> AWS_S3_Bucket -> CORS_policy.txt](Code/AWS_S3_Bucket/CORS_policy.txt)
+      - ##### Atenção: Altere o [YOUR_DOMAIN] pelo seu domínio caso você tenha um domínio configurado, se quiser abrir a página localmente então substitua o valor de AllowedOrigins para http://localhost
+
+>[en-us]
+
+- [Optional] Create an S3 bucket in the same region as your network structure (where you have your VPC and subnets) to serve your website (if you have one). This can be used for the HTML page of this repository to access recorded videos
+  - Bucket name: Must be a globally unique name, one that reflects the hosting of your static website.
+  - Object Ownership: ACLs disabled (recommended)
+  - Block public access: Block all public access
+  - Bucket versioning: Disabled
+  - Default encryption: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+  - Bucket Key: Enable
+  - Other settings can be left at default
+  - After creating the bucket, go to the Properties tab for that bucket
+    - Edit the configuration to enable the S3 static website hosting option
+      - Hosting type: Host a static website
+      - Index document: index.html
+
+- Create an S3 Bucket in the same Region as your Networking structure (where you have your VPC and Subnets) to store the video segments that will be recorded.
+  - Bucket name: Must be a globally unique name, one that is meaningful for storing the video segments.
+  - Object Ownership: ACLs disabled (recommended)
+  - Block public access: Block all public access.
+  - Bucket versioning: Disabled.
+  - Default encryption: Server-side encryption with Amazon S3 managed keys (SSE-S3)
+  - Bucket Key: Enable.
+  - Other settings can be left at default.
+  - After creating the bucket, go to the Permissions tab for that bucket.
+    - Bucket policy: Will be configured later.
+    - Cross-origin resource sharing (CORS): Use the template in [Code -> AWS_S3_Bucket -> CORS_policy.txt](Code/AWS_S3_Bucket/CORS_policy.txt)
+      - ##### Attention: Change [YOUR_DOMAIN] to your domain if you have one. a configured domain, if you want to open the page locally then replace the value of AllowedOrigins to http://localhost
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="secrets-creation"></a>
+
+#### Criação das Secrets | Creation of Secrets
+![Owncast-SecretsManager.drawio.svg](/Images/Owncast-SecretsManager.drawio.svg)
+
+>[pt-br]
+
+Há um pré-requisito para uma das secrets, que envolve a geração do par de chaves privada e pública do tipo RSA.
+
+Em [Code -> Keygen](Code/Keygen) há um código-fonte feito em linguagem GO para geração deste par de chaves, convenientemente eu deixei o go_keygen.exe já gerado (feito o build à partir do código-fonte), você só precisa executar e o par será gerado na pasta em que for chamado o executável. Você não precisa confiar no executável, se preferir você mesmo pode fazer o build do código-fonte, você só vai precisar da versão mais recente do GO que pode ser obtido [nesta página](https://go.dev/doc/install).
+
+Você pode estar se perguntando porque gerar o par de chaves através de um código-fonte ao invés de usar um comando bash via openssl, a resposta é simples: na minha máquina eu não consegui gerar uma chave privada cujo cabeçalho ficasse "BEGIN RSA PRIVATE KEY", que acreditem é necessário ter esse cabeçalho para a solução deste repositório funcionar.
+
+De qualquer maneira, vou deixar os comandoss para fazer via openssl, caso em sua máquina dê o resultado final (precisa ter o cabeçalho BEGIN RSA PRIVATE KEY, qualquer coisa diferente disso não funcionará).
+
+```
+bash
+openssl genrsa -out private_key.pem 2048
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+- Crie duas secrets na Secrets Manager na mesma Region da sua estrutura de Redes (onde você tem seu VPC e suas Subnets)
+  - Secret 1 - para armazenar os e-mails que terão permissão de acesso à página dos vídeos
+    - Secret type: Other type of secret
+    - Key/value pairs
+      - Key: 0, Value: seu endereço de e-mail
+      - [opcional] Key: 1, Value: outro endereço de e-mail que você deseje. Vá adicionando mais caso deseje
+    - Encryption key: aws/secretsmanager
+    - Na próxima página, em Secret name dê um nome para a secret, no exemplo aqui se chama AllowedEmails
+    - Ná próxima página pode manter os valores default, já que não precisa rotacionar essas secrets
+  - Secret 2 - para armazenar a chave privada que será utilizada para gerar os cookies dos vídeos
+    - Secret type: Other type of secret
+    - Plaintext: cole a chave RSA privada gerada integralmente aqui
+    - Encryption key: aws/secretsmanager
+    - Na próxima página, em Secret name dê um nome para a secret, no exemplo aqui se chama CloudFrontPrivateKey (sim, o nome é ruim, mas é o que eu havia criado na época)
+    - Ná próxima página pode manter os valores default, já que não precisa rotacionar essas secrets
+
+>[en-us]
+
+There is a prerequisite for one of the secrets, which involves generating an RSA private and public key pair.
+
+In [Code -> Keygen](Code/Keygen), there is source code written in GO for generating this key pair. Conveniently, I've already generated go_keygen.exe (built from the source code). You just need to run it, and the key pair will be generated in the folder where the executable is called. You don't need to trust the executable; if you prefer, you can build it yourself from the source code. You'll just need the latest version of GO, which can be obtained [from this page](https://go.dev/doc/install).
+
+You may be wondering why I should generate the key pair from source code instead of using a bash command via OpenSSL. The answer is simple: on my machine, I couldn't generate a private key with the header "BEGIN RSA PRIVATE KEY," which, believe me, is required for the solution in this repository to work.
+
+Anyway, I'll leave the commands to be done via openssl, in case your machine gives the final result (it needs to have the BEGIN RSA PRIVATE KEY header, anything different from that won't work).
+
+```
+bash
+openssl genrsa -out private_key.pem 2048
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+```
+
+- Create two secrets in Secrets Manager in the same Region as your Network structure (where you have your VPC and Subnets)
+  - Secret 1 - to store the emails that will be allowed to access the video page
+    - Secret type: Other type of secret
+    - Key/value pairs
+      - Key: 0, Value: Your email address
+      - [optional] Key: 1, Value: Another email address of your choice. Add more if desired
+    - Encryption key: aws/secretsmanager
+    - On the next page, under Secret name, give the secret a name. In the example here, it's called AllowedEmails
+    - On the next page, you can keep the default values, since you don't need to rotate these secrets
+  - Secret 2 - to store the private key that will be used to generate the video cookies
+    - Secret type: Other type of secret
+    - Plaintext: Paste the fully generated private RSA key here
+    - Encryption key: aws/secretsmanager
+    - On the next page, under Secret name, give the secret a name. In the example here, it's called CloudFrontPrivateKey (yes, the name is bad, but it's what I created at the time)
+    - On the next page, you can keep the default values, since you don't need to rotate these secrets
 
 [Retornar ao resumo | Return to summary](#summary)
 
