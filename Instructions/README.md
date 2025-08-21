@@ -411,14 +411,48 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
     - Altere o nome da secret AllowedEmails caso você tenha criado com outro nome na Secrets Manager (lembra que eu indiquei você anotar essa informação!)
     - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastPolicy)
 
-[Opcional] Crie uma policy para poder gerar um certificado digital via Let's Encrypt para a instância de Proxy
-- Esta policy é para o caso de você ter um domínio no Route 53 e quiser validar o domínio com certificado digital ao chamar o Proxy pelo domínio
+- No menu Roles, crie uma nova Role, esta será a role principal para o Owncast atrelado à Policy do Owncast
+  - Trusted entity type: AWS Service
+  - Use case: Lambda
+  - Permission policies selecione:
+    - AWSLambdaBasicExecutionRole (AWS managed)
+    - O nome da Policy do Owncast, no exemplo aqui se chama OwncastPolicy (Customer managed)
+    - Lembre-se de deixar checada a caixa de seleção de ambas as policies acima citadas
+  - Role details:
+    - Role name: dê um nome para a role (no meu caso ficou o nome OwncastLambdaS3ReadAccessRole)
+    - Demais campos pode deixar os valores default
+
+- [Opcional] Crie uma policy para poder gerar um certificado digital via Let's Encrypt para a instância de Proxy
+  - Esta policy é para o caso de você ter um domínio no Route 53 e quiser validar o domínio com certificado digital ao chamar o Proxy pelo domínio
   - Ao invés de selecionar com o editor Visual, mude para o editor JSON
   - Use o template do arquivo deste repositório em [Code -> AWS_IAM -> Route53Certificate_Policy.txt](Code/AWS_IAM/Route53Certificate_Policy.txt)
     - Altere a tag [YourHostedZoneId] pelo Id da sua Hosted Zone no Route 53
-    - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastPolicy)
+    - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastProxyRoute53CertificatePolicy)
 
-##### Observações importantes: Tome nota do nome das Policies criadas
+- [Opcional] Crie uma Role para poder gerar um certificado digital via Let's Encrypt para a instância de Proxy utilizando a Policy opcional
+  - Trusted entity type: AWS Service
+  - Use case: EC2 (na lista de opções, mantenha a opção EC2 mesmo)
+  - Permission policies selecione:
+    - O nome da Policy do certificado digital, no exemplo aqui se chama OwncastProxyRoute53CertificatePolicy (Customer managed)
+    - Lembre-se de deixar checada a caixa de seleção da policy acima citada
+  - Role details:
+    - Role name: dê um nome para a role (no meu caso ficou o nome OwncastProxyRoute53CertificateRole)
+    - Demais campos pode deixar os valores default
+
+- No menu Users, crie um novo usuário
+  - User name: dê algum nome (no meu exemplo ficou Owncast)
+  - Provide user access to the AWS Management Console - optional: deixe desmarcado
+  - Após criar o usuário, clique neste usuário recém criado para ver os detalhes
+  - Na aba Security Credentials, em Access keys clique no botão Create access key
+    - Use case: Third-party service (será utilizado dentro das configurações da aplicação Owncast)
+    - Confirmation (I understand the above recommendation and want to proceed to create an acces key): deixe marcado
+    - O resto é opcional
+    - Anote o Access key
+    - Na coluna Secret access key, clique em Show e anote a Secret Key
+    - Você pode opcionalmente fazer o download do arquivo .csv com a informação da Access Key e Secret Key, guarde este arquivo se for optar por fazer o download
+    - ##### Atenção: essa será a única oportunidade para anotar a Secret Key, não clique no botão Done antes de anotar essa informação
+
+##### Observações importantes: Tome nota do nome das Policies, Roles e do User (Acces Key e Secret Key) criadas
 
 >[en-us]
 
@@ -434,12 +468,46 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
     - Change the name of the AllowedEmails secret if you created it with a different name in Secrets Manager (remember, I told you to write this down!)
     - On the next page, give your policy a name (in my case it was OwncastPolicy)
 
-[Optional] Create a policy to generate a digital certificate via Let's Encrypt for the Proxy instance.
-- This policy is for if you have a domain in Route 53 and want to validate the domain with a digital certificate when calling the Proxy through the domain.
-  - Instead of selecting with the Visual editor, switch to the JSON editor.
+- In the Roles menu, create a new role. This will be the primary role for Owncast, linked to the Owncast Policy.
+  - Trusted entity type: AWS Service
+  - Use case: Lambda
+  - Permission policies: select:
+    - AWSLambdaBasicExecutionRole (AWS managed)
+    - The name of the Owncast Policy. In this example, it's called OwncastPolicy (Customer managed)
+    - Remember to check the boxes for both policies mentioned above
+  - Role details:
+    - Role name: Give the role a name (in my case, it was OwncastLambdaS3ReadAccessRole)
+    - You can leave the other fields at their default values
+
+- [Optional] Create a policy to generate a digital certificate via Let's Encrypt for the Proxy instance
+  - This policy is for if you have a domain in Route 53 and want to validate the domain with a digital certificate when calling the Proxy through the domain
+  - Instead of selecting with the Visual editor, switch to the JSON editor
   - Use the template file from this repository in [Code -> AWS_IAM -> Route53Certificate_Policy.txt](Code/AWS_IAM/Route53Certificate_Policy.txt)
-    - Change the [YourHostedZoneId] tag to the ID of your Hosted Zone in Route 53.
-    - On the next page, give your policy a name (in my case, it was OwncastPolicy).
+    - Change the [YourHostedZoneId] tag to the ID of your Hosted Zone in Route 53
+    - On the next page, give your policy a name (in my case, it was OwncastProxyRoute53CertificatePolicy)
+
+- [Optional] Create a Role to generate a digital certificate via Let's Encrypt for the Proxy instance using the optional Policy
+  - Trusted entity type: AWS Service
+  - Use case: EC2 (in the list of options, keep the EC2 option)
+  - Permission policies: select:
+    - The name of the digital certificate policy. In this example, it's called OwncastProxyRoute53CertificatePolicy (Customer managed)
+    - Remember to check the box for the policy mentioned above
+  - Role details:
+    - Role name: Give the role a name (in my case, it was called OwncastProxyRoute53CertificateRole)
+    - You can leave the other fields at their default values
+
+- In the Users menu, create a new user
+  - User name: Give it a name (in my example, it was Owncast)
+  - Provide user access to the AWS Management Console - optional: leave unchecked
+  - After creating the user, click on the newly created user to view the details
+  - In the Security Credentials tab, under Access keys, click the Create access key button
+    - Use case: Third-party service (will be used within the Owncast application settings)
+    - Confirmation (I understand the above recommendation and want to proceed to create an access key): leave checked
+    - The rest is optional
+    - Write down the Access key
+    - In the Secret access key column, click Show and write down the Secret Key
+    - You can optionally download the .csv file with the Access Key and Secret Key information. Save this file if you choose to download it
+    - ##### Attention: This will be the only opportunity to write down the Secret Key. Do not click the Done button before writing down this information
 
 ##### Important notes: Take note of the name of the Policies created
 
