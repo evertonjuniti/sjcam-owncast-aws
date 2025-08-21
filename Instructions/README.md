@@ -13,6 +13,7 @@
 - [Criação das Secrets | Creation of Secrets](#secrets-creation)
 - [Criação das instâncias EC2 | Creating EC2 instances](#instance-creation)
 - [Configuração de policies, roles e usuário do IAM | Configuring IAM policies, roles, and users](iam-configuration)
+- [Configuração do Cognito | Cognito configuration](iam-cognito)
 
 <a name="network-configuration"></a>
 
@@ -512,3 +513,67 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 ##### Important notes: Take note of the name of the Policies created
 
 [Retornar ao resumo | Return to summary](#summary)
+
+<a name="iam-cognito"></a>
+
+#### Configuração do Cognito | Cognito configuration
+![Owncast-Cognito.drawio.svg](/Images/Owncast-Cognito.drawio.svg)
+
+>[pt-br]
+
+- No Cognito na region que você escolheu (o mesmo da VPC e Subnets), vá ao menu User pools e crie um novo user pool
+  - Application type: Single-page application (SPA)
+  - Name your application: dê um nome para sua aplicação (no meu exemplo ficou Owncast SPA app)
+  - Options for sign-in identifiers: Email e Username
+  - Required attributes for sign-up: email (não haverá a opção de sign-up, mas esse campo é obrigatório o preenchimento)
+  - Deixe os demais campos default e crie o user directory
+  - Vá até o final da página e clique no botão Go to Overview
+    - ##### Em User pool information, tome nota do User pool ID
+  - Vá para o menu App clientes deste user pool
+    - ##### Tome nota do valor da coluna Client ID
+  - Vá para o menu Users deste user pool
+    - Clique no botão Create user
+    - Alias attributes used to sign in: deixe a opção Email marcada
+    - Invitation message: Don't send an invitation
+    - User name: escolha um nome de usuário
+    - Email address: inclua o seu e-mail
+    - Mark email address as verified: deixe marcado
+    - Phone number - optional: é opcional, pode deixar vazio se quiser
+    - Mark phone number as verified: é opcional também
+    - Temporary password: Set a password
+    - Password: escolha uma senha temporária, será necessário fazer o login uma primeira vez para trocar a senha, mas isso será visto na sessão de disponibilização da página de acesso aos vídeos
+    - ##### Repita este processo de criação de usuários para todos os usuários que deseje incluir
+  - Vá para o menu Sign-up
+    - Ao final da página em Self-service sign-up, clique no botão Edit
+    - Em self-registration, Enable self-registration: deixe desmarcado e salve as alterações
+
+>[en-us]
+
+- In Cognito, in the region you chose (the same as the VPC and Subnets), go to the User Pools menu and create a new user pool
+  - Application type: Single-page application (SPA)
+  - Name your application: Give your application a name (in my example, it was Owncast SPA app)
+  - Options for sign-in identifiers: Email and Username
+  - Required attributes for sign-up: Email (there won't be a sign-up option, but this field is required)
+  - Leave the remaining fields default and create the user directory
+  - Scroll to the bottom of the page and click the Go to Overview button
+    - ##### Under User pool information, take note the User pool ID
+  - Go to the App clients menu for this user pool
+    - ##### Take note the value in the Client ID column
+  - Go to the Users menu for this user pool
+    - Click the Create user button
+    - Alias attributes used to sign in: Leave the Email option checked
+    - Invitation message: Don't send an invitation
+    - User name: Choose a username
+    - Email address: Include your email address
+    - Mark email address as verified: Leave checked
+    - Phone number - optional: Optional; you can leave it blank if you wish
+    - Mark phone number as verified: Also optional
+    - Temporary password: Set a password
+    - Password: Choose a temporary password. You will need to log in a first time to change the password, but this will be displayed in the video access page.
+    - ##### Repeat this user creation process for all users you wish to include
+  - Go to the Sign-up menu
+    - At the bottom of the page, under Self-service sign-up, click the Edit button.
+    - Under Self-registration, Enable self-registration: Leave it unchecked and save the changes.
+
+[Retornar ao resumo | Return to summary](#summary)
+
