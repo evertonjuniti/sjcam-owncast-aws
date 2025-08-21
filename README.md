@@ -82,12 +82,14 @@
 - Depois de todas as otimizações que fiz e dadas as escolhas (como não ter Load Balancer, NAT Gateway, WAF e ligar as instâncias somente quando necessário), este é meu custo diário mínimmo (com as instâncias desligadas):
   - Elastic IP: $ 0.12 USD (é cobrado quando não está associado à uma instância ligada, mas vale mais a pena pagar por este custo do que manter a instância ligada 24/7)
   - EBS Volume: $ 0.10 USD + $ 0.04 USD (é o SDD da instância EC2, é cobrado mesmo com as instâncias desligadas. Aqui o custo é de dois volumes: da instância de Proxy e do Owncast, cada uma tem um volume EBS anexado à instância)
-  - Secrets Manager: $ 0.01 USD por secret
-  - ##### Total: $ 0.28 USD por dia ou $ 8.40 USD por mês (cálculo do custo diário vezes 30 dias) de uso mínimo, ou seja, com instâncias desligadas e sem acessar a função Lambda
+  - Secrets Manager: $ 0.03 USD
+  - S3: 0.01 USD (depende da quantidade de objetos armazenados)
+  - ##### Total: $ 0.30 USD por dia ou $ 9.00 USD por mês (cálculo do custo diário vezes 30 dias) de uso mínimo, ou seja, com instâncias desligadas e sem acessar a função Lambda
 
 > [en-us] 
 - After all the optimizations I made and given the choices I made (such as not having a Load Balancer, NAT Gateway, WAF, and only turning on instances when necessary), this is my minimum daily cost (with instances turned off):
   - Elastic IP: $ 0.12 USD (charged when not associated with a turned on instance, but it's more worthwhile to pay this cost than keeping the instance turned on 24/7)
   - EBS Volume: $ 0.10 USD + $ 0.04 USD (this is the EC2 instance's SSD, charged even with the instances turned off. Here, the cost is for two volumes: the Proxy instance and the Owncast instance, each with an EBS volume attached to the instance)
-  - Secrets Manager: $ 0.01 USD per secret
-  - ##### Total: $ 0.28 USD per day or $ 8.40 USD per month (calculated daily cost times 30 days) with minimum usage, that is, with instances turned off and without access to the Lambda function
+  - Secrets Manager: $ 0.03  USD
+  - S3: 0.01 USD (depends on the amount of objects stored)
+  - ##### Total: $ 0.30 USD per day or $ 9.00 USD per month (calculated daily cost times 30 days) with minimum usage, that is, with instances turned off and without access to the Lambda function

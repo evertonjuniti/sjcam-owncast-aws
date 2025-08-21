@@ -13,7 +13,9 @@
 - [Criação das Secrets | Creation of Secrets](#secrets-creation)
 - [Criação das instâncias EC2 | Creating EC2 instances](#instance-creation)
 - [Configuração de policies, roles e usuário do IAM | Configuring IAM policies, roles, and users](iam-configuration)
-- [Configuração do Cognito | Cognito configuration](iam-cognito)
+- [Configuração do Cognito | Cognito configuration](cognito-configuration)
+- [Configuração do Route 53 | Route 53 configuration](route53-configuration)
+- [Criação de certificado digital | Digital certificate creation](certificate-manager-creation)
 
 <a name="network-configuration"></a>
 
@@ -514,7 +516,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 
 [Retornar ao resumo | Return to summary](#summary)
 
-<a name="iam-cognito"></a>
+<a name="cognito-configuration"></a>
 
 #### Configuração do Cognito | Cognito configuration
 ![Owncast-Cognito.drawio.svg](/Images/Owncast-Cognito.drawio.svg)
@@ -577,3 +579,82 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 
 [Retornar ao resumo | Return to summary](#summary)
 
+<a name="route53-configuration"></a>
+
+#### Configuração do Route 53 | Route 53 configuration
+![Owncast-Route_53.drawio.svg](/Images/Owncast-Route_53.drawio.svg)
+
+>[pt-br]
+   
+- [Opcional] Registre um domínio, esse é um requisito opcional caso você queira acessar os recursos por um domínio seu
+  - Vá no menu Registered domains no Route 53 e clique no botão Register domains
+    - Check availability for a domain: especifique um nome de domínio desejado e clique no botão Search
+      - Pode ser que o domínio exato não esteja disponível, mas na lista de Suggested available domains há opções de domínio possíveis para seleção
+      - Observe que a depender do domínio o custo anual pode variar
+      - Clique em Select na coluna Actions para o domínio selecionado e depois clique no botão Proceed to checkout
+    - Observe que você pode optar pela renovação automática ou não
+    - Você precisará informar dados cadastrais de registro de contato como pessoa responsável pelo domínio, você pode mudar os demais tipos de contato se quiser ou manter as opções padrão já selecionadas
+    - Por fim em Terms and conditions, leia as condições e marque a caixa de seleção e depois clique no botão Submit para comprar o domínio
+
+- [Opcional] Crie uma hosted zone, esse é um requisito opcional caso você queira usar seu domínio para registrar como você roteia tráfego para seu domínio aos serviços que criaremos com este manual
+  - Vá no menu Hosted zones no Route 53 e clique no botão Create hosted zone
+    - Domain name: indique o nome do domínio que você possui (pode ser o que você comprou caso tenha optado por registrar um domínio)
+    - Type: Public hosted zone (para permitir chamadas/tráfego da internet)
+
+>[en-us]
+
+- [Optional] Register a domain. This is an optional requirement if you want to access resources through your own domain
+  - Go to the Registered domains menu in Route 53 and click the Register domains button
+    - Check availability for a domain: specify a desired domain name and click the Search button
+      - The exact domain may not be available, but the Suggested available domains list contains possible domain options for selection
+      - Note that the annual cost may vary depending on the domain
+      - Click Select in the Actions column for the selected domain and then click the Proceed to checkout button
+  - Note that you can choose automatic renewal or not
+  - You will need to provide contact information as the person responsible for the domain. You can change the other contact types if you wish or keep the default options already selected
+  - Finally, in the Terms and Conditions section, read the terms and conditions, select the checkbox, and then click the Submit button to purchase the domain
+
+- [Optional] Create a hosted zone. This is an optional requirement if you want to use your domain to register how you route traffic for your domain to the services we'll create in this guide
+  - Go to the Hosted Zones menu in Route 53 and click the Create Hosted Zone button
+    - Domain Name: Enter the name of your domain (this can be the one you purchased if you chose to register a domain)
+    - Type: Public hosted zone (to allow calls/internet traffic)
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="certificate-manager-creation"></a>
+
+#### Criação de certificado digital | Digital certificate creation
+![Owncast-Certificate_Manager.drawio.svg](/Images/Owncast-Certificate_Manager.drawio.svg)
+
+>[pt-br]
+
+- [Opcional] Caso queira usar o certificado digital em conjunto com o seu domínio de registro
+  - ##### Atenção: aqui você precisa estar na region us-east-1 (N. Virginia) para uso com o CloudFront
+  - Vá no meu List certificates no AWS Certificate Manager e clique no botão Request
+  - Certificate type: Request a public certificate
+  - Fully qualified domain name: Adicione o seu domínio e também um wildcard do seu domínio (isso vai te ajudar depois), vou indicar um exemplo:
+    - evertonogura.com (esse é o meu domínio, aqui substitua pelo seu)
+    - *.evertonogura.com (esse é o wildcard para sub-domínio, aqui substitua pelo seu)
+    - ##### Observação: para adicionar mais de um domínio, após adicionar o primeiro domínio, clique no botão Add another name to this certificate para adionar demais domínios ou sub-domínios
+  - Allow export: Disable export
+    - ##### Cuidado: não clique em Enable export se você não vai exportar o certificado para usar fora da AWS, se você selecionar essa opção vai te gerar um custo de $ 164.00 USD
+  - Validation method: DNS validation - recommended
+  - Key algorithm: RSA 2048 (mas pode selecionar outro se quiser)
+  - É necessário aguardar a AWS fazer a validação do nome de domínio para verificar se você é o dono, se você registrou o domínio no Route 53 e se você criou a Hosted zone, clique no botão Create records in Route 53 para que o AWS Certificate Manager adicione os registros de domínios e sub-domínios para você na sua Hosted zone e aí a validação ocorrerá com sucesso
+
+>[en-us]
+
+- [Optional] If you want to use the digital certificate in conjunction with your registered domain,
+  - ##### Note: You must be in the us-east-1 (N. Virginia) region for use with CloudFront
+  - Go to my List certificates in AWS Certificate Manager and click the Request button
+  - Certificate type: Request a public certificate
+  - Fully qualified domain name: Add your domain and a wildcard for your domain (this will help you later). Here's an example:
+    - evertonogura.com (this is my domain, replace it with yours here)
+    - *.evertonogura.com (this is the wildcard for a subdomain, replace it with yours here)
+    - ##### Note: To add more than one domain, after adding the first domain, click the Add another name to this certificate button to add additional domains or subdomains
+  - Allow export: Disable export
+    - ##### Caution: Do not click Enable export if you will not export the certificate for use outside of AWS. Selecting this option will incur a cost of $164.00 USD
+  - Validation method: DNS validation - recommended
+  - Key algorithm: RSA 2048 (but you can select another if you wish)
+  - You must wait for AWS to validate the domain name to verify that you are the owner. If you registered the domain with Route 53 and created the Hosted zone, click the Create records in Route 53 button so that AWS Certificate Manager adds the domain and subdomain records for you to your Hosted zone, and then the validation will be successful
+
+[Retornar ao resumo | Return to summary](#summary)
