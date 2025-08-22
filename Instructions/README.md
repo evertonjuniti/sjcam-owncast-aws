@@ -16,6 +16,7 @@
 - [Configuração do Cognito | Cognito configuration](cognito-configuration)
 - [Configuração do Route 53 | Route 53 configuration](route53-configuration)
 - [Criação de certificado digital | Digital certificate creation](certificate-manager-creation)
+- [Configuração das instâncias EC2 | Configuring EC2 instances](#instance-configuration)
 
 <a name="network-configuration"></a>
 
@@ -46,27 +47,27 @@
   - Faça a associação desta Route Table à Subnet Pública criada
 - Crie um NACL (Network Access Control List) para a subnet pública
   - Regras de entrada
-    - SSH (porta 22), Source: 0.0.0.0/0
-    - HTTPS (porta 443), Source: 0.0.0.0/0
-    - Custom TCP (porta 1935), Source: 0.0.0.0/0
-    - Custom TCP (range de portas 1024-65535), Source: 172.31.100.0/28
+    - Rule number 100, SSH (porta 22), Source: 0.0.0.0/0
+    - Rule number 101, HTTPS (porta 443), Source: 0.0.0.0/0
+    - Rule number 102, Custom TCP (porta 1935), Source: 0.0.0.0/0
+    - Rule number 103, Custom TCP (range de portas 1024-65535), Source: 172.31.100.0/28
   - Regras de saída
-    - HTTP* (porta 8080), Destination: 172.31.100.0/28
-    - Custom TCP (porta 1935), Destination: 172.31.100.0/28
-    - HTTP (porta 80), Destination: 0.0.0.0/0
-    - HTTPS (porta 443), Destination: 0.0.0.0/0
-    - DNS (UDP) (porta 53), Destination: 0.0.0.0/0
-    - Custom TCP (range e portas 1024-65535), Destination: 0.0.0.0/0
+    - Rule number 100, HTTP* (porta 8080), Destination: 172.31.100.0/28
+    - Rule number 101, Custom TCP (porta 1935), Destination: 172.31.100.0/28
+    - Rule number 102, HTTP (porta 80), Destination: 0.0.0.0/0
+    - Rule number 103, HTTPS (porta 443), Destination: 0.0.0.0/0
+    - Rule number 104, DNS (UDP) (porta 53), Destination: 0.0.0.0/0
+    - Rule number 105, Custom TCP (range e portas 1024-65535), Destination: 0.0.0.0/0
   - Associe este NACL à Subnet Pública criada
 - Crie um NACL (Network Access Control List) para a subnet privada
   - Regras de entrada
-    - Custom TCP (porta 1935), Source: 172.31.101.0/28
-    - HTTP* (porta 8080), Source: 172.31.101.0/28
-    - Custom TCP (range de portas 1024-65535), Source: 0.0.0.0/0
+    - Rule number 100, Custom TCP (porta 1935), Source: 172.31.101.0/28
+    - Rule number 101, HTTP* (porta 8080), Source: 172.31.101.0/28
+    - Rule number 102, Custom TCP (range de portas 1024-65535), Source: 0.0.0.0/0
   - Regras de saída
-    - Custom TCP (range de portas 1024-65535), Destination: 172.31.101.0/28
-    - Custom TCP (range de portas 1024-65535), Destination: 0.0.0.0/0
-    - HTTPS (porta 443), Destination: 0.0.0.0/0
+    - Rule number 100, Custom TCP (range de portas 1024-65535), Destination: 172.31.101.0/28
+    - Rule number 101, Custom TCP (range de portas 1024-65535), Destination: 0.0.0.0/0
+    - Rule number 102, HTTPS (porta 443), Destination: 0.0.0.0/0
   - Faça a associação desta Route Table à Subnet Privada criada
 - Crie um Security Group (será usado na instância de Proxy)
   - Regras de entrada
@@ -133,27 +134,27 @@ Depois de fazer as instalações, desfaça todos esses itens acima citados para 
   - Associate this route table with the private subnet you created
 - Create a NACL (Network Access Control List) for the public subnet
   - Inbound Rules
-    - SSH (port 22), Source: 0.0.0.0/0
-    - HTTPS (port 443), Source: 0.0.0.0/0
-    - Custom TCP (port 1935), Source: 0.0.0.0/0
-    - Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
+    - Rule number 100, SSH (port 22), Source: 0.0.0.0/0
+    - Rule number 101, HTTPS (port 443), Source: 0.0.0.0/0
+    - Rule number 102, Custom TCP (port 1935), Source: 0.0.0.0/0
+    - Rule number 103, Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
   - Outbound Rules
-    - HTTP* (port 8080), Destination: 172.31.100.0/28
-    - Custom TCP (port 1935), Destination: 172.31.100.0/28
-    - HTTP (port 80), Destination: 0.0.0.0/0
-    - HTTPS (port 443), Destination: 0.0.0.0/0
-    - DNS (UDP) (port 53), Destination: 0.0.0.0/0
-    - Custom TCP (range and ports 1024-65535), Destination: 0.0.0.0/0
+    - Rule number 100, HTTP* (port 8080), Destination: 172.31.100.0/28
+    - Rule number 101, Custom TCP (port 1935), Destination: 172.31.100.0/28
+    - Rule number 102, HTTP (port 80), Destination: 0.0.0.0/0
+    - Rule number 103, HTTPS (port 443), Destination: 0.0.0.0/0
+    - Rule number 104, DNS (UDP) (port 53), Destination: 0.0.0.0/0
+    - Rule number 105, Custom TCP (range and ports 1024-65535), Destination: 0.0.0.0/0
   - Associate this NACL with the created Public Subnet
 - Create a NACL (Network Access Control List) for the private subnet
   - Inbound Rules
-    - Custom TCP (port 1935), Source: 172.31.101.0/28
-    - HTTP* (port 8080), Source: 172.31.101.0/28
-    - Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
+    - Rule number 100, Custom TCP (port 1935), Source: 172.31.101.0/28
+    - Rule number 101, HTTP* (port 8080), Source: 172.31.101.0/28
+    - Rule number 102, Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
   - Outbound Rules
-    - Custom TCP (port range 1024-65535), Destination: 172.31.101.0/28
-    - Custom TCP (port range 1024-65535), Destination: 0.0.0.0/0
-    - HTTPS (port 443), Destination: 0.0.0.0/0
+    - Rule number 100, Custom TCP (port range 1024-65535), Destination: 172.31.101.0/28
+    - Rule number 101, Custom TCP (port range 1024-65535), Destination: 0.0.0.0/0
+    - Rule number 102, HTTPS (port 443), Destination: 0.0.0.0/0
   - Associate this Route Table with the created Private Subnet
 - Create a Security Group (will be used on the Proxy instance)
   - Inbound Rules
@@ -348,6 +349,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - Architecture: 64-bit
   - Instance Type: t3.micro
   - Key pair: pode selecionar alguma que já tenha, se não tiver crie um novo par
+    - ##### se for criar um, guarde o arquivo .pem em um local na sua máquina, você vai precisar disso para acessar a instância depois
   - Network settings:
     - VPC: VPC default (seguindo o exemplo deste guia)
     - Subnet: a Subnet Pública que você criou
@@ -359,6 +361,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - Architecture: 64-bit
   - Instance Type: t3.small
   - Key pair: pode selecionar alguma que já tenha (por exemplo a que atribuiu à instância EC2 de Proxy), ou crie um novo par
+    - ##### se for criar um, guarde o arquivo .pem em um local na sua máquina, você vai precisar disso para acessar a instância depois
   - Network settings:
     - VPC: VPC default (seguindo o exemplo deste guia)
     - Subnet: a Subnet Privada que você criou
@@ -374,6 +377,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - Architecture: 64-bit
   - Instance Type: t3.micro
   - Key pair: You can select one you already have; if you don't have one, create a new pair
+    - ##### if you are going to create one, save the .pem file somewhere on your machine, you will need it to access the instance later
   - Network settings:
     - VPC: Default VPC (following the example in this guide)
     - Subnet: The Public Subnet you created
@@ -385,6 +389,7 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - Architecture: 64-bit
   - Instance Type: t3.small
   - Key pair: You can select one you already have (for example, the one you assigned to the Proxy EC2 instance), or create a new pair
+    - ##### if you are going to create one, save the .pem file somewhere on your machine, you will need it to access the instance later
   - Network settings:
     - VPC: Default VPC (following the example in this guide)
     - Subnet: The Private Subnet you created
@@ -656,5 +661,173 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
   - Validation method: DNS validation - recommended
   - Key algorithm: RSA 2048 (but you can select another if you wish)
   - You must wait for AWS to validate the domain name to verify that you are the owner. If you registered the domain with Route 53 and created the Hosted zone, click the Create records in Route 53 button so that AWS Certificate Manager adds the domain and subdomain records for you to your Hosted zone, and then the validation will be successful
+
+[Retornar ao resumo | Return to summary](#summary)
+
+<a name="instance-configuration"></a>
+
+#### Connfiguração das instâncias EC2 | Configuring EC2 instances
+![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+Owncast_1.png:
+![Owncast_1.png](/Images/Owncast_1.png)
+Owncast_2.png:
+![Owncast_2.png](/Images/Owncast_2.png)
+Owncast_3.png:
+![Owncast_3.png](/Images/Owncast_3.png)
+Owncast_4.png:
+![Owncast_4.png](/Images/Owncast_4.png)
+Owncast_5.png:
+![Owncast_5.png](/Images/Owncast_5.png)
+Owncast_6.png:
+![Owncast_6.png](/Images/Owncast_6.png)
+Owncast_7.png:
+![Owncast_7.png](/Images/Owncast_7.png)
+Owncast_8.png:
+![Owncast_8.png](/Images/Owncast_8.png)
+Owncast_9.png:
+![Owncast_9.png](/Images/Owncast_9.png)
+
+>[pt-br]
+
+Nesta etapa iremos configurar a instância EC2 referente ao Proxy para instalação e configuração do HAProxy e a instância EC2 referente ao Owncast para instalação e configuração do Owncast.
+
+Vamos começar pela instância do Owncast na Subnet Privada, assim já conseguiremos fazer um primeiro teste com a SJCAM SJ11.
+
+##### Atenção: faremos ajustes no Route Table, NACL, Security Group (todos via serviço VPC) apenas para possibilitar os testes, eu vou indicar o que fazer e como desfazer ao final
+
+- [Desfazer depois] Vá em Route tables no VPC, selecione a Route table referente à Subnet Privada
+  - Na aba Routes, clique no botão Edit routes
+  - Clique no botão Add route
+  - Na coluna Destination, selecione a opção 0.0.0.0/0
+  - Na coluna Target, selecione a opção Internet Gateway
+  - No campo logo abaixo, clique para selecionar o Internet Gateway específico que existe para a sua VPC e depois clique no botão Save changes
+  - ##### Esta configuração de rota é necessária para que seja possível conectividade com a internet à partir da Subnet Privada
+- [Desfazer depois] Vá em Network ACLs ainda no VPC, selecione o NACL associado à Subnet Privada
+  - Vá na aba Inbound rules e clique no botão Edit inbound rules
+    - Clique no botão Add new rule
+      - Rule number 103 (este é um exemplo, tem que ser um número após a última rule que você já tinha), Custom TCP (porta 1935), Source: 0.0.0.0/0
+    - Clique no botão Add new rule
+      - Rule number 104 (este é um exemplo, tem que ser um número após a última rule que você já tinha), Custom TCP (porta 8080), Source: 0.0.0.0/0
+    - Clique no botão Add new rule
+      - Rule number 105 (este é um exemplo, tem que ser um número após a última rule que você já tinha), SSH (porta 22), Source: 0.0.0.0/0
+    - Clique no botão Save changes
+  - Vá na aba Outbound rules e clique no botão Edit outbound rules
+    - Clique no botão Add new rule
+      - Rule number 103 (este é um exemplo, tem que ser um número após a última rule que você já tinha), HTTP (porta 80), Destination: 0.0.0.0/0
+    - Clique no botão Add new rule
+      - Rule number 104 (este é um exemplo, tem que ser um número após a última rule que você já tinha), DNS (UDP) (porta 53), Destination: 0.0.0.0/0
+    - Clique no botão Save changes
+  - ##### Esta configuração de firewall à nível de subnet é necessária para que seja possível conectividade com a internet à partir da Subnet Privada, entrada RTMP e para o Web Server, saída para internet
+- [Desfazer depois] Vá em Security Groups ainda no VPC, selecione o Security Group de Manutenção
+  - Vá na aba Inbound rules e clique no botão Edit inbound rules
+    - Clique no botão Add new rule
+      - Custom TCP (porta 1935), Source: Anywhere-IPv4 - 0.0.0.0/0
+    - Clique no botão Add new rule
+      - Custom TCP (porta 8080), Source: Anywhere-IPv4 - 0.0.0.0/0
+    - Clique no botão Save rules
+  - Outbound já tem regras de saída para HTTP, HTTPS e UDP, então não é necessário fazer nada
+  - ##### Esta configuração de firewall à nível de instância é necessária para que seja possível conectividade com a internet à partir da Subnet Privada, entrada RTMP e para o Web Server, saída para internet
+- Vá no menu Instances no EC2, selecione a instância referente ao Owncast, clique no botão Actions, depois clique na opção Security e depois clique em Change security groups
+  - Clique na barra de pesquisa, aparecerá o Security Group de Manutenção, clique no Security Group e depois clique no botão Add security group
+  - Clique no botão Save
+- Ainda em Instances no EC2, selecione a instância referente ao Owncast, clique no botão Instance state e depois clique em Start instance
+- [Desfazer depois] Vá no menu Elastic IPs ainda no EC2, selecione o Elastic IP existente, clique no botão Actions e depois clique em Associate Elastic IP address
+  - Resource type: mantenha Instance
+  - Instance: seleciona a instância do Owncast (estará com status running)
+  - Private IP address: clique no campo que aparecerá o IP privado da instância do Owncast, clique no IP privado
+  - Reassociation: Allow this Elastic IP address to e reassociated - mantenha checado
+  - Clique no botão Associate
+- Vá no menu Instances no EC2 e selecione a instância de Proxy
+  - Clique no botão Actions, depois clique em Security e depois clique em Change security groups
+  - Em Associated security groups, clique na barra de busca e clique no Security Group referente à manutenção que foi criado em etapas anteriores
+  - Depois clique no botão Add security group e clique no botão Save
+  - Clique no botão Instance state e depois clique em Start instance, aguarde a coluna Instance state mudar de Stopped para Running
+
+Agora vamos finalmente instalar o Owncast e configurá-lo:
+
+- Pré-requisito: ter um terminal para uso de comandos bash, pode ser o [Git](https://git-scm.com/downloads)
+- Abra um terminal bash na mesma pasta onde você tem o arquivo .pem, aquele que você eventualmente criou e atrelou à instância como "Key pair"
+- Execute o seguinte comando para acessar a instância EC2:
+```
+ssh -i "[Nome_do_seu_arquivo_pem].pem" ubuntu@[IP_público_que_você_associou_no_Elastic_IP]
+```
+##### Como o sistema operacional escolhido foi o Ubuntu na criação da instância, você vai fazer a conexão com o usuário ubuntu mesmo, este usuário é super usuário
+- Se aparecer uma pergunta sobre querer continuar a conexão, digite yes e depois pressione a tecla Enter
+- Primeiro vamos atualizar o próprio sistema operacional com os seguintes comandos (execute um de cada vez):
+```
+sudo apt update -y
+sudo apt upgrade -y
+```
+- Para que o Owncast consiga tratar os segmentos de vídeo, é necessário instalar o ffmpeg, além disso iremos instalar o unzip uma vez que o Owncast é um arquivo zip que iremos baixar:
+```
+sudo apt install ffmpeg unzip -y
+```
+- Agora vamos fazer o download do Owncast e descompactar o arquivo zip (execute um de cada vez):
+```
+sudo wget https://github.com/owncast/owncast/releases/download/v0.2.3/owncast-0.2.3-linux-64bit.zip
+sudo unzip owncast-0.2.3-linux-64bit.zip
+```
+##### O link acima é referente à última versão do Owncast na data de escrita deste passo-a-passo, mas você pode checar a última versão [neste link](https://owncast.online/releases/), só mudar o link acima com a versão desejada
+- Se tudo deu certo, você verá um arquivo binário chamado owncast na pasta através do comando ls
+- Agora vamos criar um arquivo .service para que a aplicação abra como um serviço no Ubuntu, assim se a instância for reiniciada, ela "liga" automaticamente:
+```
+cat <<EOT | sudo tee /etc/systemd/system/owncast.service > /dev/null
+[Unit]
+Description=Owncast Streaming Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu
+ExecStart=/home/ubuntu/owncast
+Restart=on-failure
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
+EOT
+```
+- Por fim, utilize os comandos à seguir para registrar e inicializar a aplicação como serviço:
+```
+sudo systemctl daemon-reload
+sudo systemctl enable owncast
+sudo systemctl start owncast
+```
+- Se deu tudo certo, o Owncast já estará executando e ativo, você pode checar isso com o seguinte comando:
+```
+systemctl status owncast
+```
+- Pode sair da instância com o comando "exit"
+- Agora abra o browser de sua preferência e digite o seguinte: [IP_público_associado_à_instância]:8080
+  - Se aparecer que o site não é seguro, é porque estamos indo via IP direto sem HTTPS e sem certificado digital, isso é normal neste momento, pode prosseguir
+    - Se der certo, você deverá ver uma página conforme imagem Owncast_1.png mais acima
+  - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: [IP_público_associado_à_instância]:8080/admin
+    - Usuário: admin
+    - Senha (atual provisória): abc123
+    - Se der certo, você deverá ver uma página conforme imagem Owncast_2.png mais acima
+    - Primera coisa a se fazer no painel de administração é trocar a senha, vá para o menu Configuration -> Server Setup
+      - Na aba Server Config, no campo Admin Password, digite uma nova senha (há validação de caracteres mínimos que a senha deve ter) e depois clique no botão Update (conforme imagem Owncast_3.png mais acima)
+      - Ao atualizar a senha você será deslogado e precisará fazer o login novamente com o usuário "admin" usando a senha nova
+    - Segunda coisa a se fazer é substituir a chave de live streaming, isso é feito também na página de Server Setup
+      - Vá para a aba Stream Keys e clique no botão "+" (conforme imagem Owncast_4.png mais acima)
+      - Tome nota da Key gerada, você pode também alterar o campo Comment descrevendo sua chave nova, depois clique no botão Add (conforme imagem Owncast_5.png mais acima), na imagem estou exemplificando com minha chave, não use a chave da imagem pois eu irei apagá-la
+      - Agora você terá 2 chaves, delete a Default stream key clicano no botão de Lixeira logo à direita da chave (conforme imagem Owncast_6.png mais acima)
+      - Você ficará apenas com a chave que acabou de criar (conforme imagem Owncast_7.png mais acima)
+    - Por fim vamos configurar a integração com o Bucket S3, isso é feito também na página se Server Setup
+      - Vá para a aba S3 Object Storage (estará conforme imagem Owncast_8.png mais acima)
+      - O campo Use S3 Storage Provider mude de OFF para ON
+      - Endpoint: `https://s3.[region_do_seu_bucket].amazonaws.com`
+      - Access key: [access_key_atrelado_ao_usuario_iam_que_você_criou]
+      - Secret key: [secret_key_atrelado_ao_usuario_iam_que_você_criou]
+      - Bucket: [o_nome_do_bucket_que_você_criou]
+      - Region: [region_do_seu_bucket]
+      - Em Optional Settings:
+        - ACL: private
+      - Você pode ver um exemplo conforme imagem Owncast_9.png mais acima
+      - Clique no botão Save
+
+>[en-us]
+
+
 
 [Retornar ao resumo | Return to summary](#summary)
