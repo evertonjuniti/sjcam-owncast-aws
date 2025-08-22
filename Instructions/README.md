@@ -798,10 +798,10 @@ sudo systemctl start owncast
 systemctl status owncast
 ```
 - Pode sair da instância com o comando "exit"
-- Agora abra o browser de sua preferência e digite o seguinte: [IP_público_associado_à_instância]:8080
+- Agora abra o browser de sua preferência e digite o seguinte: `[IP_público_associado_à_instância]:8080`
   - Se aparecer que o site não é seguro, é porque estamos indo via IP direto sem HTTPS e sem certificado digital, isso é normal neste momento, pode prosseguir
     - Se der certo, você deverá ver uma página conforme imagem Owncast_1.png mais acima
-  - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: [IP_público_associado_à_instância]:8080/admin
+  - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: `[IP_público_associado_à_instância]:8080/admin`
     - Usuário: admin
     - Senha (atual provisória): abc123
     - Se der certo, você deverá ver uma página conforme imagem Owncast_2.png mais acima
