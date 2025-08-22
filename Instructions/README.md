@@ -686,6 +686,42 @@ Owncast_8.png:
 ![Owncast_8.png](/Images/Owncast_8.png)
 Owncast_9.png:
 ![Owncast_9.png](/Images/Owncast_9.png)
+Owncast_10.png:
+![Owncast_10.png](/Images/Owncast_10.png)
+Owncast_11.png:
+![Owncast_11.png](/Images/Owncast_11.png)
+Owncast_12.png:
+![Owncast_12.png](/Images/Owncast_12.png)
+Owncast_13.png:
+![Owncast_13.png](/Images/Owncast_13.png)
+Owncast_14.png:
+![Owncast_14.png](/Images/Owncast_14.png)
+Owncast_15.png:
+![Owncast_15.png](/Images/Owncast_15.png)
+Owncast_16.png:
+![Owncast_16.png](/Images/Owncast_16.png)
+Owncast_17.png:
+![Owncast_17.png](/Images/Owncast_17.png)
+Owncast_18.png:
+![Owncast_18.png](/Images/Owncast_18.png)
+Owncast_19.png:
+![Owncast_19.png](/Images/Owncast_19.png)
+Owncast_20.png:
+![Owncast_20.png](/Images/Owncast_20.png)
+Owncast_21.png:
+![Owncast_21.png](/Images/Owncast_21.png)
+Owncast_22.png:
+![Owncast_22.png](/Images/Owncast_22.png)
+Owncast_23.png:
+![Owncast_23.png](/Images/Owncast_23.png)
+Owncast_24.png:
+![Owncast_24.png](/Images/Owncast_24.png)
+Owncast_25.png:
+![Owncast_25.png](/Images/Owncast_25.png)
+Owncast_26.png:
+![Owncast_26.png](/Images/Owncast_26.png)
+Owncast_27.png:
+![Owncast_27.png](/Images/Owncast_27.png)
 
 >[pt-br]
 
@@ -825,6 +861,37 @@ systemctl status owncast
         - ACL: private
       - Você pode ver um exemplo conforme imagem Owncast_9.png mais acima
       - Clique no botão Save
+
+Agora vamos ao seu smartphone fazer a configuração apenas para testar se conseguimos conectar o device ao servidor e se os arquivos de segmento de vídeo passam a ser persistidos no bucket S3.
+
+- No seu smartphone, baixe o aplicativo SJCAM Zone da SJCAM LLC (conforme imagem Owncast_10.png mais acima)
+- No menu do aplicativo, há um ícone que simboliza a Live Stream (no meu caso é Android, então é na parte inferior do aplicativo, terceiro ícone da esquerda para a direita), veja que há a opção de conectar ao YouTube mas não usaremos essa opção, logo abaixo tem o Customize, dê um tap nesta opção (conforme imagem Owncast_11.png mais acima)
+- Insira o seguinte no campo texto: `rtmp://[IP_público_da_instância_EC2]:1935/live/[Stream_Key_que_você_anotou_da_configuração_do_Owncast]` 
+  - Exemplo: `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` (conforme imagem Owncast_12.png mais acima)
+  - Dê um tap no botão Confirm
+- Dê um tap no botão Next Step (conforme imagem Owncast_13.png mais acima)
+- No meu app, já tenho as redes configuradas, mas se precisar incluir (na primeira vez que usar, por exemplo), dê um tap no botão + Add network (conforme imagem Owncast_14.png mais acima)
+  - Você pode tanto escolher uma das redes WiFi que o app detecta automaticamente, ou você pode digitar o nome da rede
+  - Indique a senha (se houver) da rede e depois dê um tap no botão Save and Use (conforme imagem Owncast_15.png mais acima)
+  - No meu caso eu tenho a rede WiFi da minha residência e também do meu celular
+    - ##### Para usar seu celular como hotstop WiFi (necessário caso queira fazer live stream fora de casa), você tem que lembrar de ativar seu celular como Roteador Wi-Fi
+- Selecionada a rede que irá utilizar, dê um tap no botão Next
+- Na tela de confirmação, dê um tap no botão Confirm (conforme imagem Owncast_16.png mais acima)
+- Você pode escolher uma imagem de capa e uma descrição para sua Live Stream, mas neste caso não é necessário, dê um tap no botão Start live (conforme imagem Owncast_17.png mais acima)
+- Se deu tudo certo, aparecerá um QR Code que você deverá ler com a sua câmera SJCAM SJ11 (conforme imagem Owncast_18.png mais acima)
+
+Agora vamos começar a transmissão ao vivo, na sua câmera SJCAM SJ11, ligue ela e dê um "swipe up" para aparecer as opções da câmera (conforme imagem Owncast_19.png mais acima)
+
+- Ao aparecem as opões, dê um "swipe up" novamente que aparecerá o botão de Live (conforme imagem Owncast_20.png mais acima)
+- Dê um tap no botão Live broadcast (conforme imagem Owncast_21.png mais acima)
+- Aponte a câmera SJCAM SJ11 para o QR Code do smartphone gerado no app SJCAM Zone (conforme imagem Owncast_22.png mais acima)
+- Aguarde a conexão da câmera SJCAM SJ11 com o servidor do Owncast (sua instância EC2 recém configurada) (conforme imagem Owncast_23.png mais acima)
+- Quando mudar o status na parte superior da câmera, você já estará ao vivo (no meu caso está em português do Brasil, então fica escrito "Transmissão ao vivo") (conforme imagem Owncast_24.png mais acima)
+- Você pode checar se houve algum problema no painel de Administração do Owncast, no menu Utilities clique no item Logs, deveria aparecer algo igual à imagem Owncast_25.png mais acima
+- E lá no serviço S3 no seu bucket, você verá que a pasta "hls" foi criada e dentro dela a pasta "0" também foi criada, os segmentos de vídeo serão persistidos nesta estrutura (conforme imagem Owncast_26.png mais acima)
+- Para encerrar a live streaming, na sua câmera SJCAM SJ11 se a tela escureceu apenas dê um tap nela e depois dê um tap no "x" do canto superior esquerdo
+- E no app no smartphone, se não for mais fazer live streaming dê um tap no botão "stop live streaming"
+  - Se você quiser, é possível iniciar outro live streaming sem parar este, basta apontar novamente a câmera SJCAM SJ11 no QR Code do app
 
 >[en-us]
 
