@@ -1,4 +1,4 @@
-#### Criação das instâncias EC2
+# Criação das instâncias EC2
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
 
 - Instância EC2 para o servidor de Proxy (utilizando HAProxy)

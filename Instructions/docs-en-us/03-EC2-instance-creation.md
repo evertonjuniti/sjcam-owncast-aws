@@ -1,4 +1,4 @@
-#### Creating EC2 instances
+# Creating EC2 instances
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
 
 - EC2 instance for the Proxy server (using HAProxy)
