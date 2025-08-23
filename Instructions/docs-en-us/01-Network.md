@@ -70,12 +70,13 @@
 - Include the following in the NACL associated with the Public and Private Subnet:
   - Inbound Rule
     - SSH (port 22), Source: 0.0.0.0/0
-    - Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
   - Outbound Rule
     - HTTP (port 80), Destination: 0.0.0.0/0
     - DNS (UDP) (port 53), Destination: 0.0.0.0/0
     - Custom TCP (port range 1024-65535), Destination: 0.0.0.0/0
 - Include the following in the NACL associated with the Public Subnet:
+  - Inbound Rule
+    - Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
   - Outbound Rule
     - HTTPS (port 443), Destination: 0.0.0.0/0
 - Associate it with the EC2 instance in the Public and Private Subnet:

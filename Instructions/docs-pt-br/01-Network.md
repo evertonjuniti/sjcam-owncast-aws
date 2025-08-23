@@ -70,12 +70,13 @@
 - Inclua na NACL associada à Subnet Pública e Privada:
   - Regra de entrada
     - SSH (porta 22), Source: 0.0.0.0/0
-    - Custom TCP (range de porta 1024-65535), Source: 0.0.0.0/0
   - Regra de saída
     - HTTP (porta 80), Destination: 0.0.0.0/0
     - DNS (UDP) (porta 53), Destination: 0.0.0.0/0
     - Custom TCP (range de porta 1024-65535), Destination: 0.0.0.0/0
 - Inclua na NACL associada à Subnet Pública:
+  - Regra de entrada
+    - Custom TCP (range de porta 1024-65535), Source: 0.0.0.0/0
   - Regra de saída
     - HTTPS (porta 443), Destination: 0.0.0.0/0
 - Associe à instância EC2 da Subnet Pública e Privada:
