@@ -22,17 +22,21 @@ defaults
     timeout client  50s
     timeout server  5m
 
-# ========== RTMP PROXY ==========
-frontend rtmp_front
-    bind *:1935
+# ========== RTMPS PROXY TO 1935 ==========
+frontend rtmps_front
+    # Bind the RTMPS (1935) port only if you want to use a certificate
+    # If you don't need a certificate and don't need to use the RTMPS (1935) port, you can change to bind *:1935, but remember to change the Security Group
+    bind *:1935 ssl crt /etc/haproxy/certs/[YOUR_PEM_FILE_NAME].pem
     mode tcp
     default_backend rtmp_back
 
 backend rtmp_back
     mode tcp
-    server owncast [PRIVATE_IP_ADDRESS_OF_YOUR_OWNCAST_EC2_INSTANCE]:1935 check
+    option tcp-check
+    tcp-check connect port 1935
+    server owncast_rtmp [PRIVATE_IP_ADDRESS_OF_YOUR_OWNCAST_EC2_INSTANCE]:1935 check
 
-# ========== HTTPS PARA 8080 ==========
+# ========== HTTPS PROXY TO 8080 ==========
 frontend https_front
     # Bind the HTTPS (443) port only if you want to use a certificate
     # If you don't need a certificate and don't need to use the HTTPS (443) port, you can change to bind *:8080, but remember to change the Security Group
