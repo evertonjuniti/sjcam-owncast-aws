@@ -1,114 +1,6 @@
 # Configuring EC2 instances
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
 
-Owncast_1.png:
-
-![Owncast_1.png](/Images/Owncast_1.png)
-
-Owncast_2.png:
-
-![Owncast_2.png](/Images/Owncast_2.png)
-
-Owncast_3.png:
-
-![Owncast_3.png](/Images/Owncast_3.png)
-
-Owncast_4.png:
-
-![Owncast_4.png](/Images/Owncast_4.png)
-
-Owncast_5.png:
-
-![Owncast_5.png](/Images/Owncast_5.png)
-
-Owncast_6.png:
-
-![Owncast_6.png](/Images/Owncast_6.png)
-
-Owncast_7.png:
-
-![Owncast_7.png](/Images/Owncast_7.png)
-
-Owncast_8.png:
-
-![Owncast_8.png](/Images/Owncast_8.png)
-
-Owncast_9.png:
-
-![Owncast_9.png](/Images/Owncast_9.png)
-
-Owncast_10.png:
-
-![Owncast_10.png](/Images/Owncast_10.png)
-
-Owncast_11.png:
-
-![Owncast_11.png](/Images/Owncast_11.png)
-
-Owncast_12.png:
-
-![Owncast_12.png](/Images/Owncast_12.png)
-
-Owncast_13.png:
-
-![Owncast_13.png](/Images/Owncast_13.png)
-
-Owncast_14.png:
-
-![Owncast_14.png](/Images/Owncast_14.png)
-
-Owncast_15.png:
-
-![Owncast_15.png](/Images/Owncast_15.png)
-
-Owncast_16.png:
-
-![Owncast_16.png](/Images/Owncast_16.png)
-
-Owncast_17.png:
-
-![Owncast_17.png](/Images/Owncast_17.png)
-
-Owncast_18.png:
-
-![Owncast_18.png](/Images/Owncast_18.png)
-
-Owncast_19.png:
-
-![Owncast_19.png](/Images/Owncast_19.png)
-
-Owncast_20.png:
-
-![Owncast_20.png](/Images/Owncast_20.png)
-
-Owncast_21.png:
-
-![Owncast_21.png](/Images/Owncast_21.png)
-
-Owncast_22.png:
-
-![Owncast_22.png](/Images/Owncast_22.png)
-
-Owncast_23.png:
-
-![Owncast_23.png](/Images/Owncast_23.png)
-
-Owncast_24.png:
-
-![Owncast_24.png](/Images/Owncast_24.png)
-
-Owncast_25.png:
-
-![Owncast_25.png](/Images/Owncast_25.png)
-
-Owncast_26.png:
-
-![Owncast_26.png](/Images/Owncast_26.png)
-
-Owncast_27.png:
-
-![Owncast_27.png](/Images/Owncast_27.png)
-
 In this step we will configure the EC2 instance related to Owncast for installing and configuring Owncast and the EC2 instance related to the Proxy for installing and configuring HAProxy
 
 ### Note: We'll be making adjustments to the Route Table, NACL, and Security Group (all via VPC service) just to enable testing. I'll explain what to do and how to undo them at the end
@@ -212,22 +104,30 @@ systemctl status owncast
 ```
 - You can exit the instance with the "exit" command
 - Now open your preferred web browser and type the following: `[Public_IP_associated_with_instance]:8080`
-  - If it says the site is not secure, it's because we're using a direct IP address without HTTPS and without a digital certificate. This is normal at this point, so you can continue.
-    - If successful, you should see a page as shown in the image Owncast_1.png above.
+  - If it says the site is not secure, it's because we're using a direct IP address without HTTPS and without a digital certificate. This is normal at this point, so you can continue
+    - If successful, you should see a page
+    ![Owncast_01.png](/Images/Owncast_01.png)
   - Now let's access the administration panel. In the browser, add /admin, making it look like this: `[Public_IP_associated_with_instance]:8080/admin`
     - Username: admin
     - Password (current, temporary): abc123
-    - If successful, you should see a page as shown in the image Owncast_2.png above
+    - If successful, you should see a page
+    ![Owncast_02.png](/Images/Owncast_02.png)
     - The first thing to do in the administration panel is to change the password. Go to the Configuration -> Server Setup menu
-      - On the Server Config tab, in the Admin Password field, enter a new password (there is a minimum character validation for the password) and Then click the Update button (as shown in the Owncast_3.png image above)
+      - On the Server Config tab, in the Admin Password field, enter a new password (there is a minimum character validation for the password) and Then click the Update button
+      ![Owncast_03.png](/Images/Owncast_03.png)
       - When you update your password, you will be logged out and will need to log in again with the "admin" username using the new password
     - The second thing to do is replace the live streaming key. This is also done on the Server Setup page
-      - Go to the Stream Keys tab and click the "+" button (as shown in Owncast_4.png above)
-      - Make a note of the generated key. You can also edit the Comment field to describe your new key. Then, click the Add button (as shown in Owncast_5.png above). In the image, I'm using my own key as an example. Don't use the key from the image, as I'll be deleting it
-      - Now you'll have two keys. Delete the Default stream key by clicking the Trash button to the right of the key (as shown in Owncast_6.png above)
-      - You'll only have the key you just created (as shown in Owncast_7.png above)
+      - Go to the Stream Keys tab and click the "+" button
+      ![Owncast_04.png](/Images/Owncast_04.png)
+      - Make a note of the generated key. You can also edit the Comment field to describe your new key. Then, click the Add button. In the image, I'm using my own key as an example. Don't use the key from the image, as I'll be deleting it
+      ![Owncast_05.png](/Images/Owncast_05.png)
+      - Now you'll have two keys. Delete the Default stream key by clicking the Trash button to the right of the key
+      ![Owncast_06.png](/Images/Owncast_06.png)
+      - You'll only have the key you just created
+      ![Owncast_07.png](/Images/Owncast_07.png)
     - Finally, let's configure the integration with the S3 Bucket. This is also done on the Server Setup page
-      - Go to the S3 Object Storage tab (it will be shown in the Owncast_8.png image above)
+      - Go to the S3 Object Storage tab
+      ![Owncast_08.png](/Images/Owncast_08.png)
       - Change the Use S3 Storage Provider field from OFF to ON
       - Endpoint: `https://s3.[region_of_your_bucket].amazonaws.com`
       - Access key: [access_key_linked_to_the_iam_user_you_created]
@@ -236,38 +136,57 @@ systemctl status owncast
       - Region: [region_of_your_bucket]
       - In Optional Settings:
         - ACL: private
-      - You can see an example as shown in the Owncast_9.png image above
+      - You can see an example:
+      ![Owncast_09.png](/Images/Owncast_09.png)
       - Click the Save button
 
 Now let's go to your smartphone to configure it just to test whether we can connect the device to the server and whether the video segment files are now persisted in the S3 bucket
 
-- On your smartphone, download the SJCAM Zone app from SJCAM LLC (as shown in Owncast_10.png above)
-- In the app menu, there's an icon that symbolizes Live Stream (in my case, it's on Android, so it's at the bottom of the app, third icon from left to right). Note that there's an option to connect to YouTube, but we won't use this option. Just below is Customize; tap this option (as shown in Owncast_11.png above)
+- On your smartphone, download the SJCAM Zone app from SJCAM LLC
+![Owncast_10.png](/Images/Owncast_10.png)
+- In the app menu, there's an icon that symbolizes Live Stream (in my case, it's on Android, so it's at the bottom of the app, third icon from left to right). Note that there's an option to connect to YouTube, but we won't use this option. Just below is Customize; tap this option
+![Owncast_11.png](/Images/Owncast_11.png)
 - Enter the following in the text field: `rtmp://[public_IP_of_the_EC2_instance]:1935/live/[Stream_Key_you_noted_from_the_Owncast_configuration]`
-  - Example: `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` (as shown in image Owncast_12.png above)
+  - Example: `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
+  ![Owncast_12.png](/Images/Owncast_12.png)
   - Tap the Confirm button
-- Tap the Next Step button (as shown in image Owncast_13.png above)
-- In my app, I already have the networks configured, but if you need to add them (the first time you use them, for example), tap the + Add network button (as shown in image Owncast_14.png above)
+- Tap the Next Step button
+![Owncast_13.png](/Images/Owncast_13.png)
+- In my app, I already have the networks configured, but if you need to add them (the first time you use them, for example), tap the + Add network button
+![Owncast_14.png](/Images/Owncast_14.png)
   - You can either choose one of the Wi-Fi networks that the app automatically detects, or you can enter the network name
-  - Enter the network name. Enter the network password (if applicable) and then tap the Save and Use button (as shown in the Owncast_15.png image above)
+  - Enter the network name. Enter the network password (if applicable) and then tap the Save and Use button
+  ![Owncast_15.png](/Images/Owncast_15.png)
   - In my case, I have both my home Wi-Fi network and my cell phone's
     - #### To use your cell phone as a Wi-Fi hotspot (necessary if you want to live stream outside the home), you must remember to activate your cell phone as a Wi-Fi router
 - Once you've selected the network you'll use, tap the Next button
-- On the confirmation screen, tap the Confirm button (as shown in Owncast_16.png above)
-- You can choose a cover image and description for your Live Stream, but in this case, it's not necessary. Tap the Start Live button (as shown in Owncast_17.png above)
-- If everything went well, a QR Code will appear that you can scan with your SJCAM SJ11 camera (as shown in Owncast_18.png above)
+- On the confirmation screen, tap the Confirm button
+![Owncast_16.png](/Images/Owncast_16.png)
+- You can choose a cover image and description for your Live Stream, but in this case, it's not necessary. Tap the Start Live button
+![Owncast_17.png](/Images/Owncast_17.png)
+- If everything went well, a QR Code will appear that you can scan with your SJCAM SJ11 camera
+![Owncast_18.png](/Images/Owncast_18.png)
 
-Now let's start the live broadcast. On your SJCAM SJ11 camera, turn it on and swipe up to display the camera options (as shown in Owncast_19.png above)
+Now let's start the live broadcast. On your SJCAM SJ11 camera, turn it on and swipe up to display the camera options
+![Owncast_19.png](/Images/Owncast_19.png)
 
-- When the options appear, swipe up again to display the Live button (as shown in Owncast_20.png above)
-- Tap the Live broadcast button (as shown in Owncast_21.png above)
-- Point the SJCAM SJ11 camera at the QR Code on your smartphone generated in the SJCAM Zone app (as shown in Owncast_22.png above)
-- Wait for the SJCAM SJ11 camera to connect to the Owncast server (your newly configured EC2 instance) (as shown in Owncast_23.png above)
-- When the status at the top of the camera changes, you're already live (in my case, it's in Brazilian Portuguese, so it says "Transmissão ao vivo"). (as shown in the Owncast_24.png image above)
-- You can check for any issues in the Owncast Administration panel. In the Utilities menu, click on the Logs item. You should see something similar to the Owncast_25.png image above
-- And in the S3 service in your bucket, you'll see that the "hls" folder has been created, and within it, the "0" folder has also been created. The video segments will be persisted in this structure (as shown in the Owncast_26.png image above)
+- When the options appear, swipe up again to display the Live button
+![Owncast_20.png](/Images/Owncast_20.png)
+- Tap the Live broadcast button
+![Owncast_21.png](/Images/Owncast_21.png)
+- Point the SJCAM SJ11 camera at the QR Code on your smartphone generated in the SJCAM Zone app
+![Owncast_22.png](/Images/Owncast_22.png)
+- Wait for the SJCAM SJ11 camera to connect to the Owncast server (your newly configured EC2 instance)
+![Owncast_23.png](/Images/Owncast_23.png)
+- When the status at the top of the camera changes, you're already live (in my case, it's in Brazilian Portuguese, so it says "Transmissão ao vivo", it means "Live streaming")
+![Owncast_24.png](/Images/Owncast_24.png)
+- You can check for any issues in the Owncast Administration panel. In the Utilities menu, click on the Logs item. You should see something similar to the example:
+![Owncast_25.png](/Images/Owncast_25.png)
+- And in the S3 service in your bucket, you'll see that the "hls" folder has been created, and within it, the "0" folder has also been created. The video segments will be persisted in this structure
+![Owncast_26.png](/Images/Owncast_26.png)
 - To end the live stream, on your SJCAM SJ11 camera, if the screen has gone dark, just tap it and then tap the "x" in the upper left corner
-- When you end the live streaming, the "Offline" video segment becomes available (as shown in the Owncast_27.png image above)
+- When you end the live streaming, the "Offline" video segment becomes available
+![Owncast_27.png](/Images/Owncast_27.png)
 - And in the smartphone app, if you're no longer live streaming, tap the "stop live streaming" button
 - If you want, you can start another live stream without stopping this one; just point the SJCAM SJ11 camera at the app's QR Code again
 
