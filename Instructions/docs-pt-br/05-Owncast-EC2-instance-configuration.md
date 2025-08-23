@@ -1,7 +1,7 @@
 # Configuração das instâncias EC2
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
 
-Nesta etapa iremos configurar a instância EC2 referente ao Owncast para instalação e configuração do Owncast e a instância EC2 referente ao Proxy para instalação e configuração do HAProxy
+Nesta etapa iremos configurar a instância EC2 referente ao Owncast para instalação e configuração do Owncast
 
 ### Atenção: faremos ajustes no Route Table, NACL, Security Group (todos via serviço VPC) apenas para possibilitar os testes, eu vou indicar o que fazer e como desfazer ao final
 
@@ -40,11 +40,6 @@ Nesta etapa iremos configurar a instância EC2 referente ao Owncast para instala
   - Private IP address: clique no campo que aparecerá o IP privado da instância do Owncast, clique no IP privado
   - Reassociation: Allow this Elastic IP address to e reassociated - mantenha checado
   - Clique no botão Associate
-- Vá no menu Instances no EC2 e selecione a instância de Proxy
-  - Clique no botão Actions, depois clique em Security e depois clique em Change security groups
-  - Em Associated security groups, clique na barra de busca e clique no Security Group referente à manutenção que foi criado em etapas anteriores
-  - Depois clique no botão Add security group e clique no botão Save
-  - Clique no botão Instance state e depois clique em Start instance, aguarde a coluna Instance state mudar de Stopped para Running
 
 Agora vamos finalmente instalar o Owncast e configurá-lo:
 
@@ -52,7 +47,7 @@ Agora vamos finalmente instalar o Owncast e configurá-lo:
 - Abra um terminal bash na mesma pasta onde você tem o arquivo .pem, aquele que você eventualmente criou e atrelou à instância como "Key pair"
 - Execute o seguinte comando para acessar a instância EC2:
 ```
-ssh -i "[Nome_do_seu_arquivo_pem].pem" ubuntu@[IP_público_que_você_associou_no_Elastic_IP]
+ssh -o HostKeyAlias=Owncast -i "[Nome_do_seu_arquivo_pem].pem" ubuntu@[IP_público_que_você_associou_no_Elastic_IP]
 ```
 ### Como o sistema operacional escolhido foi o Ubuntu na criação da instância, você vai fazer a conexão com o usuário ubuntu mesmo, este usuário é super usuário
 - Se aparecer uma pergunta sobre querer continuar a conexão, digite yes e depois pressione a tecla Enter
@@ -236,6 +231,7 @@ Pronto! Agora sabemos que a instância EC2 do Owncast está funcionando perfeita
   - No campo logo abaixo, clique para selecionar o Internet Gateway específico que existe para a sua VPC e depois clique no botão Save changes
 
 ### Não esqueça de desfazer as regras conforme as instruções acima, isso é necessário para assegurar acessos mínimos para evitar riscos de acessos indesejados
+### Lembre de desligar as instâncias para não gerar cobranças adicionais
 
 ---
 [⬅️ Anterior: Configuração de policies, roles e usuário do IAM](04-IAM.md) | [🏠 Índice](../README.md) | [Próximo: Configuração da instância EC2 de Proxy ➡️](06-Proxy-EC2-instance-configuration.md)

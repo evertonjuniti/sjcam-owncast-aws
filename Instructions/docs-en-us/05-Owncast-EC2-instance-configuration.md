@@ -1,7 +1,7 @@
 # Configuring EC2 instances
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
 
-In this step we will configure the EC2 instance related to Owncast for installing and configuring Owncast and the EC2 instance related to the Proxy for installing and configuring HAProxy
+In this step we will configure the EC2 instance related to Owncast for installing and configuring Owncast
 
 ### Note: We'll be making adjustments to the Route Table, NACL, and Security Group (all via VPC service) just to enable testing. I'll explain what to do and how to undo them at the end
 
@@ -41,11 +41,6 @@ In this step we will configure the EC2 instance related to Owncast for installin
   - Private IP address: Click the field that will display the Owncast instance's private IP, click the private IP
   - Reassociation: Allow this Elastic IP address to be reassociated. Keep it checked
   - Click the Associate button
-- Go to the Instances menu in EC2 and select the Proxy instance
-  - Click the Actions button, then click Security, and then click Change security groups
-  - Under Associated security groups, click the search bar and click the Security Group for maintenance that was created in previous steps
-  - Then click the Add security group button and click the Save button
-  - Click the Instance state button and then click Start instance. Wait for the Instance state column to change from Stopped to Running
 
 Now let's finally install Owncast and configure it:
 
@@ -53,7 +48,7 @@ Now let's finally install Owncast and configure it:
 - Open a bash terminal in the same folder where you have the .pem file, the one you eventually created and linked to the instance as a "Key pair."
 - Run the following command to access the EC2 instance:
 ```
-ssh -i "[Name_of_your_pem_file].pem" ubuntu@[Public_IP_you_associated_with_Elastic_IP]
+ssh -o HostKeyAlias=Owncast -i "[Name_of_your_pem_file].pem" ubuntu@[Public_IP_you_associated_with_Elastic_IP]
 ```
 ### Since Ubuntu was the operating system you chose when creating the instance, you will connect with the ubuntu user; this user is the superuser
 - If a question appears asking if you want to continue the connection, type yes and then press Enter
@@ -237,6 +232,7 @@ That's it! Now we know the Owncast EC2 instance is working perfectly!
   - In the field below, click to select the specific Internet Gateway that exists for your VPC and then click the Save Changes button
 
 ### Don't forget to undo the rules as per the instructions above, this is necessary to ensure minimum access to avoid the risk of unwanted access
+### Remember to turn off the instances to avoid generating additional charges
 
 ---
 [⬅️ Previous: Configuring IAM policies, roles, and users](04-IAM.md) | [🏠 Index](../README.md) | [Next: Proxy EC2 instance configuration ➡️](06-Proxy-EC2-instance-configuration.md)
