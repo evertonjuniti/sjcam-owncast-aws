@@ -662,85 +662,113 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
 
 #### Connfiguração das instâncias EC2 | Configuring EC2 instances
 ![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+
 Owncast_1.png:
+
 ![Owncast_1.png](/Images/Owncast_1.png)
 
 Owncast_2.png:
+
 ![Owncast_2.png](/Images/Owncast_2.png)
 
 Owncast_3.png:
+
 ![Owncast_3.png](/Images/Owncast_3.png)
 
 Owncast_4.png:
+
 ![Owncast_4.png](/Images/Owncast_4.png)
 
 Owncast_5.png:
+
 ![Owncast_5.png](/Images/Owncast_5.png)
 
 Owncast_6.png:
+
 ![Owncast_6.png](/Images/Owncast_6.png)
 
 Owncast_7.png:
+
 ![Owncast_7.png](/Images/Owncast_7.png)
 
 Owncast_8.png:
+
 ![Owncast_8.png](/Images/Owncast_8.png)
 
 Owncast_9.png:
+
 ![Owncast_9.png](/Images/Owncast_9.png)
 
 Owncast_10.png:
+
 ![Owncast_10.png](/Images/Owncast_10.png)
 
 Owncast_11.png:
+
 ![Owncast_11.png](/Images/Owncast_11.png)
 
 Owncast_12.png:
+
 ![Owncast_12.png](/Images/Owncast_12.png)
 
 Owncast_13.png:
+
 ![Owncast_13.png](/Images/Owncast_13.png)
 
 Owncast_14.png:
+
 ![Owncast_14.png](/Images/Owncast_14.png)
 
 Owncast_15.png:
+
 ![Owncast_15.png](/Images/Owncast_15.png)
 
 Owncast_16.png:
+
 ![Owncast_16.png](/Images/Owncast_16.png)
 
 Owncast_17.png:
+
 ![Owncast_17.png](/Images/Owncast_17.png)
 
 Owncast_18.png:
+
 ![Owncast_18.png](/Images/Owncast_18.png)
 
 Owncast_19.png:
+
 ![Owncast_19.png](/Images/Owncast_19.png)
 
 Owncast_20.png:
+
 ![Owncast_20.png](/Images/Owncast_20.png)
 
 Owncast_21.png:
+
 ![Owncast_21.png](/Images/Owncast_21.png)
 
 Owncast_22.png:
+
 ![Owncast_22.png](/Images/Owncast_22.png)
 
 Owncast_23.png:
+
 ![Owncast_23.png](/Images/Owncast_23.png)
 
 Owncast_24.png:
+
 ![Owncast_24.png](/Images/Owncast_24.png)
 
 Owncast_25.png:
+
 ![Owncast_25.png](/Images/Owncast_25.png)
 
 Owncast_26.png:
+
 ![Owncast_26.png](/Images/Owncast_26.png)
 
 Owncast_27.png:
+
 ![Owncast_27.png](/Images/Owncast_27.png)
 
 >[pt-br]
