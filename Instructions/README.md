@@ -134,17 +134,12 @@ Depois de fazer as instalações, desfaça todos esses itens acima citados para 
   - Associate this route table with the private subnet you created
 - Create a NACL (Network Access Control List) for the public subnet
   - Inbound Rules
-    - Rule number 100, SSH (port 22), Source: 0.0.0.0/0
-    - Rule number 101, HTTPS (port 443), Source: 0.0.0.0/0
-    - Rule number 102, Custom TCP (port 1935), Source: 0.0.0.0/0
-    - Rule number 103, Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
+    - Rule number 100, HTTPS (port 443), Source: 0.0.0.0/0
+    - Rule number 101, Custom TCP (port 1935), Source: 0.0.0.0/0
+    - Rule number 102, Custom TCP (port range 1024-65535), Source: 172.31.100.0/28
   - Outbound Rules
     - Rule number 100, HTTP* (port 8080), Destination: 172.31.100.0/28
     - Rule number 101, Custom TCP (port 1935), Destination: 172.31.100.0/28
-    - Rule number 102, HTTP (port 80), Destination: 0.0.0.0/0
-    - Rule number 103, HTTPS (port 443), Destination: 0.0.0.0/0
-    - Rule number 104, DNS (UDP) (port 53), Destination: 0.0.0.0/0
-    - Rule number 105, Custom TCP (range and ports 1024-65535), Destination: 0.0.0.0/0
   - Associate this NACL with the created Public Subnet
 - Create a NACL (Network Access Control List) for the private subnet
   - Inbound Rules
