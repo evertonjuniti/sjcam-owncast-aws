@@ -21,7 +21,6 @@ In this step we will configure the EC2 instance related to Owncast for installin
     - Click the Add New Rule button
     - Rule number 105 (this is an example, it must be one number after the last rule you already had), SSH (port 22), Source: 0.0.0.0/0
     - Click the Add New Rule button
-    - Rule number 106 (this is an example, it must be one number after the last rule you already had). one number after the last rule you already had), Custom TCP (port range 1024-65535), Source: 0.0.0.0/0
     - Click the Save changes button
   - Go to the Outbound Rules tab and click the Edit Outbound Rules button
     - Click the Add New Rule button
@@ -106,7 +105,7 @@ systemctl status owncast
 - Now open your preferred web browser and type the following: `[Public_IP_associated_with_instance]:8080`
   - If it says the site is not secure, it's because we're using a direct IP address without HTTPS and without a digital certificate. This is normal at this point, so you can continue
     - If successful, you should see a page
-    
+
     ![Owncast_01.png](/Images/Owncast_01.png)
   - Now let's access the administration panel. In the browser, add /admin, making it look like this: `[Public_IP_associated_with_instance]:8080/admin`
     - Username: admin
@@ -225,7 +224,6 @@ That's it! Now we know the Owncast EC2 instance is working perfectly!
     - Rule number 103 (this is an example), Custom TCP (port 1935), Source: 0.0.0.0/0 -> Click the Remove button
     - Rule number 104 (this is an example), Custom TCP (port 8080), Source: 0.0.0.0/0 -> Click the Remove button
     - Rule number 105 (this is an example), SSH (port 22), Source: 0.0.0.0/0 -> Click the Remove button
-    - Rule number 106 (this is an example), Custom TCP (port range 1024-65535), Source: 0.0.0.0/0 -> Click the Remove button
     - Click the Save changes button
   - Go to the Outbound Rules tab and click the Edit Outbound Rules button
     - Rule number 102 (this is an example), HTTP (port 80), Destination: 0.0.0.0/0 -> Click the Remove button

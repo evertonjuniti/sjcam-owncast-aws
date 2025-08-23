@@ -20,8 +20,6 @@ Nesta etapa iremos configurar a instância EC2 referente ao Owncast para instala
       - Rule number 104 (este é um exemplo, tem que ser um número após a última rule que você já tinha), Custom TCP (porta 8080), Source: 0.0.0.0/0
     - Clique no botão Add new rule
       - Rule number 105 (este é um exemplo, tem que ser um número após a última rule que você já tinha), SSH (porta 22), Source: 0.0.0.0/0
-    - Clique no botão Add new rule
-      - Rule number 106 (este é um exemplo, tem que ser um número após a última rule que você já tinha), Custom TCP (range de porta 1024-65535), Source: 0.0.0.0/0
     - Clique no botão Save changes
   - Vá na aba Outbound rules e clique no botão Edit outbound rules
     - Clique no botão Add new rule
@@ -106,7 +104,7 @@ systemctl status owncast
 - Agora abra o browser de sua preferência e digite o seguinte: `[IP_público_associado_à_instância]:8080`
   - Se aparecer que o site não é seguro, é porque estamos indo via IP direto sem HTTPS e sem certificado digital, isso é normal neste momento, pode prosseguir
     - Se der certo, você deverá ver uma página
-    
+
     ![Owncast_01.png](/Images/Owncast_01.png)
   - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: `[IP_público_associado_à_instância]:8080/admin`
     - Usuário: admin
@@ -225,7 +223,6 @@ Pronto! Agora sabemos que a instância EC2 do Owncast está funcionando perfeita
     - Rule number 103 (este é um exemplo), Custom TCP (porta 1935), Source: 0.0.0.0/0 -> Clique no botão Remove
     - Rule number 104 (este é um exemplo), Custom TCP (porta 8080), Source: 0.0.0.0/0 -> Clique no botão Remove
     - Rule number 105 (este é um exemplo), SSH (porta 22), Source: 0.0.0.0/0 -> Clique no botão Remove
-    - Rule number 106 (este é um exemplo), Custom TCP (range de porta 1024-65535), Source: 0.0.0.0/0 -> Clique no botão Remove
     - Clique no botão Save changes
   - Vá na aba Outbound rules e clique no botão Edit outbound rules
     - Rule number 102 (este é um exemplo), HTTP (porta 80), Destination: 0.0.0.0/0 -> Clique no botão Remove
