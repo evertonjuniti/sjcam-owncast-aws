@@ -773,9 +773,9 @@ Owncast_27.png:
 
 >[pt-br]
 
-Nesta etapa iremos configurar a instância EC2 referente ao Proxy para instalação e configuração do HAProxy e a instância EC2 referente ao Owncast para instalação e configuração do Owncast.
+Nesta etapa iremos configurar a instância EC2 referente ao Owncast para instalação e configuração do Owncast e a instância EC2 referente ao Proxy para instalação e configuração do HAProxy
 
-Vamos começar pela instância do Owncast na Subnet Privada, assim já conseguiremos fazer um primeiro teste com a SJCAM SJ11.
+#### Vamos começar pela instância do Owncast na Subnet Privada, assim já conseguiremos fazer um primeiro teste com a SJCAM SJ11
 
 ##### Atenção: faremos ajustes no Route Table, NACL, Security Group (todos via serviço VPC) apenas para possibilitar os testes, eu vou indicar o que fazer e como desfazer ao final
 
@@ -974,11 +974,15 @@ Pronto! Agora sabemos que a instância EC2 do Owncast está funcionando perfeita
 
 ##### Não esqueça de desfazer as regras conforme as instruções acima, isso é necessário para assegurar acessos mínimos para evitar riscos de acessos indesejados
 
+#### Agora amos instalar e configurar a instância do Proxy na Subnet Pública e fazer um segundo teste com a SJCAM SJ11
+
+
+
 >[en-us]
 
-In this step, we'll configure the EC2 instance for the Proxy to install and configure HAProxy, and the EC2 instance for Owncast to install and configure Owncast
+In this step we will configure the EC2 instance related to Owncast for installing and configuring Owncast and the EC2 instance related to the Proxy for installing and configuring HAProxy
 
-We'll start with the Owncast instance in the Private Subnet, so we can perform a first test with the SJCAM SJ11
+#### We'll start with the Owncast instance in the Private Subnet, so we can perform a first test with the SJCAM SJ11
 
 ##### Note: We'll be making adjustments to the Route Table, NACL, and Security Group (all via VPC service) just to enable testing. I'll explain what to do and how to undo them at the end
 
@@ -1176,5 +1180,9 @@ That's it! Now we know the Owncast EC2 instance is working perfectly!
   - In the field below, click to select the specific Internet Gateway that exists for your VPC and then click the Save Changes button
 
 ##### Don't forget to undo the rules as per the instructions above, this is necessary to ensure minimum access to avoid the risk of unwanted access
+
+#### Now we will install and configure the Proxy instance on the Public Subnet and do a second test with the SJCAM SJ11
+
+
 
 [Retornar ao resumo | Return to summary](#summary)
