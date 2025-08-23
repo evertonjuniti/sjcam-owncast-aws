@@ -28,4 +28,4 @@
 ### Important Notes: Take note of the Instance ID of both EC2 instances and the Elastic IP address
 
 ---
-[⬅️ Previous: Creating an S3 Bucket](02-S3-Bucket.md) | [🏠 Index](../README.md) | [Next: Owncast EC2 instance configuration ➡️](04-Owncast-EC2-instance-configuration.md)
+[⬅️ Previous: Creating an S3 Bucket](02-S3-Bucket.md) | [🏠 Index](../README.md) | [Next: Configuring IAM policies, roles, and users ➡️](04-IAM.md)

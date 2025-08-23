@@ -28,4 +28,4 @@
 ### Observações importantes: Tome nota do Instance ID de ambas as instâncias EC2 e do endereço IP elástico
 
 ---
-[⬅️ Anterior: Criação do Bucket S3](02-S3-Bucket.md) | [🏠 Índice](../README.md) | [Próximo: Configuração da instância EC2 do Owncast ➡️](04-Owncast-EC2-instance-configuration.md)
+[⬅️ Anterior: Criação do Bucket S3](02-S3-Bucket.md) | [🏠 Índice](../README.md) | [Próximo: Configuração de policies, roles e usuário do IAM ➡️](04-IAM.md)
