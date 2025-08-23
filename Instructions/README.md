@@ -888,6 +888,7 @@ Agora vamos começar a transmissão ao vivo, na sua câmera SJCAM SJ11, ligue el
 - Você pode checar se houve algum problema no painel de Administração do Owncast, no menu Utilities clique no item Logs, deveria aparecer algo igual à imagem Owncast_25.png mais acima
 - E lá no serviço S3 no seu bucket, você verá que a pasta "hls" foi criada e dentro dela a pasta "0" também foi criada, os segmentos de vídeo serão persistidos nesta estrutura (conforme imagem Owncast_26.png mais acima)
 - Para encerrar a live streaming, na sua câmera SJCAM SJ11 se a tela escureceu apenas dê um tap nela e depois dê um tap no "x" do canto superior esquerdo
+- Quando você encerra a live streaming, segmento de vídeo "Offline" fica disponível (conforme imagem Owncast_27.png mais acima)
 - E no app no smartphone, se não for mais fazer live streaming dê um tap no botão "stop live streaming"
   - Se você quiser, é possível iniciar outro live streaming sem parar este, basta apontar novamente a câmera SJCAM SJ11 no QR Code do app
 
@@ -1090,6 +1091,7 @@ Now let's start the live broadcast. On your SJCAM SJ11 camera, turn it on and sw
 - You can check for any issues in the Owncast Administration panel. In the Utilities menu, click on the Logs item. You should see something similar to the Owncast_25.png image above
 - And in the S3 service in your bucket, you'll see that the "hls" folder has been created, and within it, the "0" folder has also been created. The video segments will be persisted in this structure (as shown in the Owncast_26.png image above)
 - To end the live stream, on your SJCAM SJ11 camera, if the screen has gone dark, just tap it and then tap the "x" in the upper left corner
+- When you end the live streaming, the "Offline" video segment becomes available (as shown in the Owncast_27.png image above)
 - And in the smartphone app, if you're no longer live streaming, tap the "stop live streaming" button
 - If you want, you can start another live stream without stopping this one; just point the SJCAM SJ11 camera at the app's QR Code again
 
