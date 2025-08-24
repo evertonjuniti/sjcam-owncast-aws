@@ -41,7 +41,7 @@ Agora vamos finalmente instalar o HAProxy e configurá-lo:
 - Abra um terminal bash na mesma pasta onde você tem o arquivo .pem, aquele que você eventualmente criou e atrelou à instância como "Key pair"
 - Execute o seguinte comando para acessar a instância EC2:
 ```
-ssh -o HostKeyAlias=Proxy -i "[Nome_do_seu_arquivo_pem].pem" ubuntu@[IP_público_que_você_associou_no_Elastic_IP]
+ssh -o HostKeyAlias=Proxy -i "[Nome_do_seu_arquivo_pem].pem" ubuntu@[Public_IP_que_você_associou_no_Elastic_IP]
 ```
 ### Como o sistema operacional escolhido foi o Ubuntu na criação da instância, você vai fazer a conexão com o usuário ubuntu mesmo, este usuário é super usuário
 - Se aparecer uma pergunta sobre querer continuar a conexão, digite yes e depois pressione a tecla Enter
@@ -58,13 +58,13 @@ sudo apt install haproxy -y
 
 #### Opção A
 - Se você já tiver um domínio e hosted zone configurado no Route 53 prossiga, caso contrário vá para a instrução [Configuração do Route 53](docs-pt-br/07-Route53.md) e siga as instruções, depois retorne aqui
-- Agora precisamos adicionar o [SEU_SUB_DOMÍNIO] (você vai precisar escolher algum nome) como Record no Route 53, assim conseguiremos configurar o DNS para que possamos chamar [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO] ao invés do [IP_Público]:
+- Agora precisamos adicionar o [YOUR_SUB_DOMAIN] (você vai precisar escolher algum nome) como Record no Route 53, assim conseguiremos configurar o DNS para que possamos chamar [YOUR_SUB_DOMAIN].[YOUR_DOMAIN] ao invés do [Public_IP]:
   - Vá em Hosted zones no Route 53 e clique na sua hosted zone
   - Clique no botão Create record
-  - Record name: digite o valor referente ao seu [SEU_SUB_DOMÍNIO]
+  - Record name: digite o valor referente ao seu [YOUR_SUB_DOMAIN]
   - Record type: A - Routes traffic to an IPv4 address and some AWS resources
   - Alias: mantenha desabilitado
-  - Value: O [IP_Público] associado à instância EC2 de Proxy
+  - Value: O [Public_IP] associado à instância EC2 de Proxy
   - Demais campos pode manter os valores default
   - Clique no botão Create records
 - Vá no menu Instances no EC2, selecione a instância de Proxy, clique no botão Action, depois clique em Security e clique na opção Modify IAM role
@@ -72,12 +72,12 @@ sudo apt install haproxy -y
 - Execute os seguintes comandos no terminal (ainda conectado à instância via SSH):
 ```
 sudo apt install certbot python3-certbot-dns-route53 -y
-sudo certbot certonly --dns-route53 -d [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO] --agree-tos --non-interactive --email [SEU_ENDEREÇO_DE_EMAIL]
+sudo certbot certonly --dns-route53 -d [YOUR_SUB_DOMAIN].[YOUR_DOMAIN] --agree-tos --non-interactive --email [YOUR_EMAIL_ADDRESS]
 sudo mkdir -p /etc/haproxy/certs
-sudo bash -c 'cat /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/fullchain.pem /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/privkey.pem > /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem'
-sudo chmod 600 /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem
+sudo bash -c 'cat /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/fullchain.pem /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/privkey.pem > /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem'
+sudo chmod 600 /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem
 ```
-#### Substitua [SEU_SUB_DOMÍNIO] e [SEU_DOMÍNIO] nos comandos acima, [SEU_DOMÍNIO] deve ser o domínio que você é dono, [SEU_SUB_DOMÍNIO] você pode escolher como gostaria que este servidor de Proxy fosse reconhecido no DNS, algo como rtmp-server.example.com, substitua também o [SEU_ENDEREÇO_DE_EMAIL] pelo seu e-mail
+#### Substitua [YOUR_SUB_DOMAIN] e [YOUR_DOMAIN] nos comandos acima, [YOUR_DOMAIN] deve ser o domínio que você é dono, [YOUR_SUB_DOMAIN] você pode escolher como gostaria que este servidor de Proxy fosse reconhecido no DNS, algo como rtmp-server.example.com, substitua também o [YOUR_EMAIL_ADDRESS] pelo seu e-mail
 - Com o certificado digital gerado para o sub-domínio e domínio, agora vamos configurar o HAProxy digitando o seguinte comando:
 ```
 sudo nano /etc/haproxy/haproxy.cfg
@@ -97,7 +97,7 @@ defaults
 
 # ========== RTMPS PROXY PARA 1935 ==========
 frontend rtmps_front
-    bind *:1935 ssl crt /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem
+    bind *:1935 ssl crt /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem
     mode tcp
     default_backend rtmp_back
 
@@ -105,11 +105,11 @@ backend rtmp_back
     mode tcp
     option tcp-check
     tcp-check connect port 1935
-    server owncast_rtmp [IP_Privado_da_Instância_do_Owncast]:1935 check
+    server owncast_rtmp [OWNCAST_INSTANCE_PRIVATE_IP]:1935 check
 
 # ========== HTTPS PROXY PARA 8080 ==========
 frontend https_front
-    bind *:443 ssl crt /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem
+    bind *:443 ssl crt /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem
     mode http
     option forwardfor
     http-request set-header X-Forwarded-Proto https
@@ -121,10 +121,10 @@ frontend https_front
 
 backend http_back
     mode http
-    server owncast_http [IP_Privado_da_Instância_do_Owncast]:8080 check
+    server owncast_http [OWNCAST_INSTANCE_PRIVATE_IP]:8080 check
 ```
-#### Lembre de substituir [SEU_SUB_DOMÍNIO] e [SEU_DOMÍNIO] nos comandos acima, [SEU_DOMÍNIO] deve ser o domínio que você é dono, [SEU_SUB_DOMÍNIO] você pode escolher como gostaria que este servidor de Proxy fosse reconhecido no DNS, algo como rtmp-server.example.com
-#### Também lembre de substituir [IP_Privado_da_Instância_do_Owncast] pelo IP Privado da sua instância do Owncast
+#### Lembre de substituir [YOUR_SUB_DOMAIN] e [YOUR_DOMAIN] nos comandos acima, [YOUR_DOMAIN] deve ser o domínio que você é dono, [YOUR_SUB_DOMAIN] você pode escolher como gostaria que este servidor de Proxy fosse reconhecido no DNS, algo como rtmp-server.example.com
+#### Também lembre de substituir [OWNCAST_INSTANCE_PRIVATE_IP] pelo IP Privado da sua instância do Owncast
 - Para salvar o arquivo de configuração que acabamos de modificar, pressione simultaneamente a tecla [CTRL] e a tecla [O] (lembrando que este exemplo é com um teclado padrão Windows) e depois pressione a tecla [ENTER] para confirmar a gravação do arquivo
 - Para sair do editor de texto, pressione simultaneament3e a tecla [CTRL] e a tecla [X] (lembrando que este exemplo é com um teclado padrão Windows)
 - Por fim execute os seguintes comandos para aplicar as alterações no serviço do HAProxy:
@@ -135,13 +135,13 @@ exit
 ```
 - Podemos fazer um pequeno teste para validar se conseguimos chamar pelo domínio e se o certificado digital deu certo através dos seguintes comandos:
 ```
-openssl s_client -connect [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]:1935 -servername [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]
-openssl s_client -connect [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]:443 -servername [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]
+openssl s_client -connect [YOUR_SUB_DOMAIN].[YOUR_DOMAIN]:1935 -servername [YOUR_SUB_DOMAIN].[YOUR_DOMAIN]
+openssl s_client -connect [YOUR_SUB_DOMAIN].[YOUR_DOMAIN]:443 -servername [YOUR_SUB_DOMAIN].[YOUR_DOMAIN]
 ```
 - Agora você pode repetir os mesmos testes de acesso ao painel de administração do Owncast e o uso da câmera SJCAM SJ11 feitos na [Configuração das instâncias EC2](docs-pt-br/05-Owncast-EC2-instance-configuration.md)
   - (caso a instância Owncast esteja desligada) Para isso vá em Instances no EC2, selecione a instância EC2 do Owncast, clique no botão Instance state e depois Start instance, aguarde a instância mudar o status para running
-  - Para testar o painel administrativo, ao invés de acessar via `[IP_público_associado_à_instância]:8080/admin`, acesse via `https://[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/admin`
-  - Já para testar a live streaming, no aplicativo SJCAM Zone mude o servidor RMTP que no exemplo estava `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` para `rtmps://[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
+  - Para testar o painel administrativo, ao invés de acessar via `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin`, acesse via `https://[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/admin`
+  - Já para testar a live streaming, no aplicativo SJCAM Zone mude o servidor RMTP que no exemplo estava `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` para `rtmps://[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
   - ##### Observação: note que agora o acesso ao site é via https e a live streaming é via rtmps
 
 ### Para a Opção A, o detalhe é que o certificado digital expira em 3 meses, então você precisará renová-lo quando vencer ou antes
@@ -150,7 +150,7 @@ openssl s_client -connect [SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]:443 -servername [SEU
   - acesse a instância via terminal bash
   - se o certificado já venceu, re-execute o seguinte comando:
 ```
-sudo bash -c 'cat /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/fullchain.pem /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/privkey.pem > /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem'
+sudo bash -c 'cat /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/fullchain.pem /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/privkey.pem > /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem'
 ```
   - já se o certificado ainda não venceu mas você quer atualizar, execute o comando:
 ```
@@ -158,10 +158,10 @@ sudo certbot renew --force-renewal
 ```
   - independente do comando executado para geração do certificado novo, após a emissão execute os comandos:
 ```
-sudo bash -c 'cat /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/fullchain.pem /etc/letsencrypt/live/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO]/privkey.pem > /etc/haproxy/certs/[SEU_SUB_DOMÍNIO].[SEU_DOMÍNIO].pem'
+sudo bash -c 'cat /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/fullchain.pem /etc/letsencrypt/live/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/privkey.pem > /etc/haproxy/certs/[YOUR_SUB_DOMAIN].[YOUR_DOMAIN].pem'
 sudo systemctl restart haproxy
 ```
-  - Lembre de substituir o [SEU_SUB_DOMÍNIO] e [SEU_DOMÍNIO] pelos seus respectivos sub-domínio e domínio
+  - Lembre de substituir o [YOUR_SUB_DOMAIN] e [YOUR_DOMAIN] pelos seus respectivos sub-domínio e domínio
 
 ### Desfaça a atribuição do IAM Role na instância ao final, em Instances no EC2, selecione a instância de Proxy, clique no botão Actions, depois clique em Security e depois em Modify IAM role, em IAM role selecione a opção No IAM Role e depois clique no botão Update IAM role. Na caixa de confirmação digite Detach no campo e depois clique no botão Detach
 
@@ -195,7 +195,7 @@ backend rtmp_back
     mode tcp
     option tcp-check
     tcp-check connect port 1935
-    server owncast_rtmp [IP_Privado_da_Instância_do_Owncast]:1935 check
+    server owncast_rtmp [OWNCAST_INSTANCE_PRIVATE_IP]:1935 check
 
 # ========== HTTP PROXY PARA 8080 ==========
 frontend https_front
@@ -211,7 +211,7 @@ frontend https_front
 
 backend http_back
     mode http
-    server owncast_http [IP_Privado_da_Instância_do_Owncast]:8080 check
+    server owncast_http [OWNCAST_INSTANCE_PRIVATE_IP]:8080 check
 ```
 - Para salvar o arquivo de configuração que acabamos de modificar, pressione simultaneamente a tecla [CTRL] e a tecla [O] (lembrando que este exemplo é com um teclado padrão Windows) e depois pressione a tecla [ENTER] para confirmar a gravação do arquivo
 - Para sair do editor de texto, pressione simultaneament3e a tecla [CTRL] e a tecla [X] (lembrando que este exemplo é com um teclado padrão Windows)
@@ -223,7 +223,7 @@ exit
 ```
 - Agora você pode repetir os mesmos testes de acesso ao painel de administração do Owncast e o uso da câmera SJCAM SJ11 feitos na [Configuração das instâncias EC2](docs-pt-br/05-Owncast-EC2-instance-configuration.md)
   - (caso a instância Owncast esteja desligada) Para isso vá em Instances no EC2, selecione a instância EC2 do Owncast, clique no botão Instance state e depois Start instance, aguarde a instância mudar o status para running
-  - Para testar o painel administrativo, acesse via `[IP_público_associado_à_instância]:8080/admin` da mesma forma que havia feito anteriormente, a diferença é que entra via Proxy e a comunicação com a instância do Owncast fica na rede privada
+  - Para testar o painel administrativo, acesse via `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin` da mesma forma que havia feito anteriormente, a diferença é que entra via Proxy e a comunicação com a instância do Owncast fica na rede privada
   - Já para testar a live streaming, no aplicativo SJCAM Zone também acesse via `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` da mesma forma como feito antes, a diferença também é que entra via Proxy e a comunicação com a instância do Owncast fica na rede privada
 
 ### Vamos desfazer algumas coisas:

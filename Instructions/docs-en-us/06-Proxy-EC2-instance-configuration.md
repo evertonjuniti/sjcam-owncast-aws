@@ -41,7 +41,7 @@ Now let's finally install HAProxy and configure it:
 - Open a bash terminal in the same folder where you have the .pem file, the one you eventually created and linked to the instance as a "Key pair."
 - Run the following command to access the EC2 instance:
 ```
-ssh -o HostKeyAlias=Proxy -i "[Name_of_your_pem_file].pem" ubuntu@[Public_IP_you_associated_with_Elastic_IP]
+ssh -o HostKeyAlias=Proxy -i "[Name_of_your_pem_file].pem" ubuntu@[PUBLIC_IP_you_associated_with_Elastic_IP]
 ```
 ### Since Ubuntu was the operating system you chose when creating the instance, you'll connect using the ubuntu user; this user is the superuser
 - If you're asked whether you want to continue connecting, type yes and then press Enter
@@ -58,13 +58,13 @@ sudo apt install haproxy -y
 
 #### Option A
 - If you already have a domain and hosted zone configured in Route 53, proceed. Otherwise, go to [Route 53 Configuration](docs-en-us/07-Route53.md) and follow the instructions, then return here
-- Now we need to add [YOUR_SUB_DOMAIN] (you'll need to choose a name) as a Record in Route 53. This way, we can configure the DNS so that we can call [YOUR_SUB_DOMAIN].[YOUR_DOMAIN] instead of [Public_IP]:
+- Now we need to add [YOUR_SUB_DOMAIN] (you'll need to choose a name) as a Record in Route 53. This way, we can configure the DNS so that we can call [YOUR_SUB_DOMAIN].[YOUR_DOMAIN] instead of [PUBLIC_IP]:
   - Go to Hosted zones in Route 53 and click on your hosted zone
   - Click the Create record button
   - Record name: Enter the value corresponding to your [YOUR_SUB_DOMAIN]
   - Record type: A - Routes traffic to an IPv4 address and some AWS resources
   - Alias: Keep disabled
-  - Value: [Public_IP] associated with the EC2 Proxy instance
+  - Value: [PUBLIC_IP] associated with the EC2 Proxy instance
   - Other fields can keep their default values
   - Click the Create records button
 - Go to the Instances menu in EC2, select the Proxy instance, click the Action button, then click Security and click the Modify IAM role option
@@ -105,7 +105,7 @@ rtmp_back backend
     tcp mode
     option tcp-check
     tcp-check connect port 1935
-    server owncast_rtmp [Owncast_Instance_Private_IP]:1935 check
+    server owncast_rtmp [OWNCAST_INSTANCE_PRIVATE_IP]:1935 check
 
 # ========== HTTPS PROXY FOR 8080 ==========
 frontend https_front
@@ -121,10 +121,10 @@ frontend https_front
 
 backend http_back
     http mode
-    server owncast_http [Owncast_Instance_Private_IP]:8080 check
+    server owncast_http [OWNCAST_INSTANCE_PRIVATE_IP]:8080 check
 ```
 #### Remember to replace [YOUR_SUB_DOMAIN] and [YOUR_DOMAIN] in the commands above. [YOUR_DOMAIN] should be the domain you own. [YOUR_SUB_DOMAIN] allows you to choose how you would like this proxy server to be recognized in DNS, something like rtmp-server.example.com
-#### Also remember to replace [Owncast_Instance_Private_IP] with the Private IP of your Owncast instance
+#### Also remember to replace [OWNCAST_INSTANCE_PRIVATE_IP] with the Private IP of your Owncast instance
 - To save the configuration file we just modified, press the [CTRL] and [O] keys simultaneously (remembering that this example is with a standard Windows keyboard), and then press the [ENTER] key to confirm saving the file
 - To exit the text editor, press the [CTRL] and [X] keys simultaneously (remembering that this example is with a standard Windows keyboard)
 - Finally, run the following commands to apply the changes to the service. HAProxy:
@@ -140,7 +140,7 @@ openssl s_client -connect [YOUR_SUB_DOMAIN].[YOUR_DOMAIN]:443 -servername [YOUR_
 ```
 - Now you can repeat the same tests for accessing the Owncast administration panel and using the SJCAM SJ11 camera performed in [EC2 Instance Configuration](docs-pt-br/05-Owncast-EC2-instance-configuration.md)
 - (If the Owncast instance is offline), go to Instances in EC2, select the Owncast EC2 instance, click the Instance state button, then click Start instance. Wait for the instance to change status to running
-- To test the administration panel, instead of accessing via `[public_IP_associated_with_instance]:8080/admin`, access it via `https://[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/admin`
+- To test the administration panel, instead of accessing via `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin`, access it via `https://[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]/admin`
 - To test live streaming, in the SJCAM Zone app, change the RMTP server (which was in the example). `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` to `rtmps://[YOUR_SUB_DOMAIN].[YOUR_DOMAIN]:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
 - ##### Note: Please note that the site is now accessed via https and live streaming is via rtmps
 
@@ -195,7 +195,7 @@ backend rtmp_back
     mode tcp
     option tcp-check
     tcp-check connect port 1935
-    server owncast_rtmp [Owncast_Instance_Private_IP]:1935 check
+    server owncast_rtmp [OWNCAST_INSTANCE_PRIVATE_IP]:1935 check
 
 # ========== HTTP PROXY PARA 8080 ==========
 frontend https_front
@@ -211,7 +211,7 @@ frontend https_front
 
 backend http_back
     mode http
-    server owncast_http [Owncast_Instance_Private_IP]:8080 check
+    server owncast_http [OWNCAST_INSTANCE_PRIVATE_IP]:8080 check
 ```
 - To save the configuration file you just modified, press the [CTRL] key and the [O] key simultaneously (remember that this example is using a standard Windows keyboard) and then press the [ENTER] key to confirm saving the file
 - To exit the text editor, press the [CTRL] key and the [X] key simultaneously (remember that this example is using a standard Windows keyboard)
@@ -223,7 +223,7 @@ exit
 ```
 - Now you can repeat the same tests for accessing the Owncast admin panel and using the SJCAM SJ11 camera performed in [EC2 Instance Configuration](docs-en-us/05-Owncast-EC2-instance-configuration.md)
   - (If the Owncast instance is offline), go to Instances in EC2, select the Owncast EC2 instance, click the Instance state button, and then click Start instance. Wait for the instance to change status to running
-  - To test the admin panel, access it via `[Public_IP_associated_with_instance]:8080/admin` in the same way as previously. The difference is that you access it via a proxy, and communication with the Owncast instance is on the private network
+  - To test the admin panel, access it via `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin` in the same way as previously. The difference is that you access it via a proxy, and communication with the Owncast instance is on the private network
   - To test live streaming, in the SJCAM Zone app, also access it via `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T` in the same way as done before, the difference is that it enters via Proxy and communication with the Owncast instance is on the private network
 
 ### Let's undo a few things:

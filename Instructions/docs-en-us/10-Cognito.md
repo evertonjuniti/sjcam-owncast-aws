@@ -28,4 +28,4 @@
     - Under Self-registration, Enable self-registration: Leave it unchecked and save the changes
 
 ---
-[⬅️ Previous: Creation of Secrets](09-Secrets.md) | [🏠 Index](../README.md) | [Next: Configuring EC2 instances ➡️](05-Owncast-EC2-instance-configuration.md)
+[⬅️ Previous: Creation of Secrets](09-Secrets.md) | [🏠 Index](../README.md) | [Next: Lambda function Configuration ➡️](11-Lambda.md)

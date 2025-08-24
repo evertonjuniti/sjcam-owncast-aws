@@ -26,6 +26,16 @@
     - Bucket policy: Will be configured later.
     - Cross-origin resource sharing (CORS): Use the template in [Code -> AWS_S3_Bucket -> CORS_policy.txt](Code/AWS_S3_Bucket/CORS_policy.txt)
       - #### Attention: Change [YOUR_DOMAIN] to your domain if you have one. a configured domain, if you want to open the page locally then replace the value of AllowedOrigins to http://localhost
+  - Now go to the Management tab
+    - Under Lifecycle rules, click the Create lifecycle rule button
+      - Lifecycle rule name: 30DaysRule
+      - Choose a rule scope: Apply to all objects in the bucket
+        - I acknowledge that this rule will apply to all objects in the bucket: Check this option
+      - Lifecycle rule actions
+        - Delete expired objects, delete markers, or incomplete multipart uploads: Check this option
+        - Expire current versions of objects: Check this option
+      - Days after object creation: 30
+      - Click the Create rule button
 
 ---
 [⬅️ Previous: Network configuration](01-Network.md) | [🏠 Index](../README.md) | [Next: Creating EC2 instances ➡️](03-EC2-instance-creation.md)

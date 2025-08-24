@@ -96,12 +96,12 @@ sudo systemctl start owncast
 systemctl status owncast
 ```
 - Pode sair da instância com o comando "exit"
-- Agora abra o browser de sua preferência e digite o seguinte: `[IP_público_associado_à_instância]:8080`
+- Agora abra o browser de sua preferência e digite o seguinte: `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080`
   - Se aparecer que o site não é seguro, é porque estamos indo via IP direto sem HTTPS e sem certificado digital, isso é normal neste momento, pode prosseguir
     - Se der certo, você deverá ver uma página
 
     ![Owncast_01.png](/Images/Owncast_01.png)
-  - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: `[IP_público_associado_à_instância]:8080/admin`
+  - Agora vamos acessar o painel de administração, o browser coloque um /admin, ficando assim: `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin`
     - Usuário: admin
     - Senha (atual provisória): abc123
     - Se der certo, você deverá ver uma página
@@ -150,7 +150,7 @@ Agora vamos ao seu smartphone fazer a configuração apenas para testar se conse
 - No menu do aplicativo, há um ícone que simboliza a Live Stream (no meu caso é Android, então é na parte inferior do aplicativo, terceiro ícone da esquerda para a direita), veja que há a opção de conectar ao YouTube mas não usaremos essa opção, logo abaixo tem o Customize, dê um tap nesta opção
 
 ![Owncast_11.png](/Images/Owncast_11.png)
-- Insira o seguinte no campo texto: `rtmp://[IP_público_da_instância_EC2]:1935/live/[Stream_Key_que_você_anotou_da_configuração_do_Owncast]` 
+- Insira o seguinte no campo texto: `rtmp://[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:1935/live/[Stream_Key_que_você_anotou_da_configuração_do_Owncast]` 
   - Exemplo: `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
 
   ![Owncast_12.png](/Images/Owncast_12.png)

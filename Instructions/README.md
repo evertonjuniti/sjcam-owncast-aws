@@ -27,3 +27,6 @@ I will divide the instructions into two parts: the first is to configure the ser
 - [Criação de certificado digital](docs-pt-br/08-Certificate.md) | [Digital certificate creation](docs-en-us/08-Certificate.md)
 - [Criação das Secrets](docs-pt-br/09-Secrets.md) | [Creation of Secrets](docs-en-us/09-Secrets.md)
 - [Configuração do Cognito](docs-pt-br/10-Cognito.md) | [Cognito configuration](docs-en-us/10-Cognito.md)
+- [Configuração da função Lambda](docs-pt-br/11-Lambda.md) | [Lambda function configuration](docs-en-us/11-Lambda.md)
+- [Configuração do API Gateway](docs-pt-br/12-API-Gateway.md) | [API Gateway Configuration](docs-en-us/12-API-Gateway.md)
+- [Configuração do CloudFront](docs-pt-br/13-CloudFront.md) | [CloudFront Configuration](docs-en-us/13-CloudFront.md)

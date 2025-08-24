@@ -97,12 +97,12 @@ sudo systemctl start owncast
 systemctl status owncast
 ```
 - You can exit the instance with the "exit" command
-- Now open your preferred web browser and type the following: `[Public_IP_associated_with_instance]:8080`
+- Now open your preferred web browser and type the following: `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080`
   - If it says the site is not secure, it's because we're using a direct IP address without HTTPS and without a digital certificate. This is normal at this point, so you can continue
     - If successful, you should see a page
 
     ![Owncast_01.png](/Images/Owncast_01.png)
-  - Now let's access the administration panel. In the browser, add /admin, making it look like this: `[Public_IP_associated_with_instance]:8080/admin`
+  - Now let's access the administration panel. In the browser, add /admin, making it look like this: `[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:8080/admin`
     - Username: admin
     - Password (current, temporary): abc123
     - If successful, you should see a page
@@ -151,7 +151,7 @@ Now let's go to your smartphone to configure it just to test whether we can conn
 - In the app menu, there's an icon that symbolizes Live Stream (in my case, it's on Android, so it's at the bottom of the app, third icon from left to right). Note that there's an option to connect to YouTube, but we won't use this option. Just below is Customize; tap this option
 
 ![Owncast_11.png](/Images/Owncast_11.png)
-- Enter the following in the text field: `rtmp://[public_IP_of_the_EC2_instance]:1935/live/[Stream_Key_you_noted_from_the_Owncast_configuration]`
+- Enter the following in the text field: `rtmp://[PUBLIC_IP_ASSOCIATED_WITH_INSTANCE]:1935/live/[Stream_Key_you_noted_from_the_Owncast_configuration]`
   - Example: `rtmp://xx.xxx.xxx.xx:1935/live/tEMfBI2K2X3Id1!bI6s^pt4c0Aun*T`
 
   ![Owncast_12.png](/Images/Owncast_12.png)
