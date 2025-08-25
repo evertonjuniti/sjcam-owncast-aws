@@ -1,18 +1,24 @@
 # Instruções de instalação e configuração | Installation and configuration instructions
 ## Ordem de configuração dos recursos | Resource configuration order
-> [pt-br] Para facilitar o passo-a-passo, haverá uma certa ordem de configuração dos recursos no ambiente da AWS, talvez certas configurações não façam muito sentido num primeiro momento, mas tentarei explicar de forma mais detalhada possível por questões didáticas e para melhor aproveitamento das informações aqui contidas. Fica avisado que a referência das informações é a versão do Console da AWS do terceiro trimestre de 2025, a depender da época que você estiver visualizando este guia pode ser que algumas diferenças surjam
+> [pt-br]
 
->[en-us] To make the step-by-step process easier, there will be a specific order for configuring resources in the AWS environment. Some configurations may not make much sense at first, but I'll try to explain them in as much detail as possible for educational purposes and to better understand the information contained herein. Please note that the information references the AWS Console version from Q3 2025; depending on when you're viewing this guide, some differences may arise.
+- Para facilitar o passo-a-passo, haverá uma certa ordem de configuração dos recursos no ambiente da AWS, talvez certas configurações não façam muito sentido num primeiro momento, mas tentarei explicar de forma mais detalhada possível por questões didáticas e para melhor aproveitamento das informações aqui contidas. Fica avisado que a referência das informações é a versão do Console da AWS do terceiro trimestre de 2025, a depender da época que você estiver visualizando este guia pode ser que algumas diferenças surjam
+
+>[en-us]
+
+- To make the step-by-step process easier, there will be a specific order for configuring resources in the AWS environment. Some configurations may not make much sense at first, but I'll try to explain them in as much detail as possible for educational purposes and to better understand the information contained herein. Please note that the information references the AWS Console version from Q3 2025; depending on when you're viewing this guide, some differences may arise.
 
 <a name="summary"></a>
 
 ### Resumo dos passos de configuração | Summary of configuration steps
 
 >[pt-br]
-Vou dividir as instruções em duas partes: a primeira é para configurar o servidor em si que é a parte mais imporante, a segunda é a página de constrole das instâncias e visualização dos vídeos, que é opcional
+
+- Vou dividir as instruções em duas partes: a primeira é para configurar o servidor em si que é a parte mais imporante, a segunda é a página de constrole das instâncias e visualização dos vídeos, que é opcional
 
 >[en-us]
-I will divide the instructions into two parts: the first is to configure the server itself, which is the most important part; the second is the instance control page and video viewing, which is optional.
+
+- I will divide the instructions into two parts: the first is to configure the server itself, which is the most important part; the second is the instance control page and video viewing, which is optional.
 
 #### Primeira parte | First part
 - [Configuração de rede](docs-pt-br/01-Network.md) | [Network configuration](docs-en-us/01-Network.md)
