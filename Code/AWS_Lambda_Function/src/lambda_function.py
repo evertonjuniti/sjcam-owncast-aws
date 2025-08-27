@@ -1,6 +1,5 @@
 import datetime
 import rsa
-from aws_cloudfront_signer import CloudFrontSigner
 import boto3
 from botocore.exceptions import ClientError
 import os
@@ -8,6 +7,7 @@ import urllib.parse
 import json
 import re
 import logging
+import base64
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -189,11 +189,7 @@ def handle_auth_cookies(event):
     if auth_result is not None:
         return auth_result
 
-    params = event.get('queryStringParameters') or {}
-    video_id = params.get('videoId') or ''
-
-    path_prefix = f"/stream-{video_id}"
-    cookies = sign_cookies(path_prefix)
+    cookies = sign_cookies()
 
     set_ck = []
     for k in ['CloudFront-Policy','CloudFront-Signature','CloudFront-Key-Pair-Id']:
@@ -348,10 +344,23 @@ def get_private_key():
         PRIVATE_KEY_CACHE = rsa.PrivateKey.load_pkcs1(secret['SecretString'].encode('utf-8'))
     return PRIVATE_KEY_CACHE
 
-def sign_cookies(path_prefix: str):
+def _cf_b64url(data: bytes) -> str:
+    b64 = base64.b64encode(data).decode('utf-8')
+    return b64.replace('+', '-').replace('/', '~').replace('=', '_')
+
+def _generate_cf_cookie(policy: str, key_id: str, rsa_signer) -> dict:
+    policy_bytes = policy.encode('utf-8')
+    signature = rsa_signer(policy_bytes)
+    return {
+        'CloudFront-Policy': _cf_b64url(policy_bytes),
+        'CloudFront-Signature': _cf_b64url(signature),
+        'CloudFront-Key-Pair-Id': key_id,
+    }
+
+def sign_cookies():
     key_id   = os.environ['CF_KEY_PAIR_ID']
     priv_key = get_private_key()
-    expire   = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    expire   = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)
 
     policy = {
       "Statement": [{
@@ -360,5 +369,8 @@ def sign_cookies(path_prefix: str):
       }]
     }
 
-    signer = CloudFrontSigner(key_id, lambda msg: rsa.sign(msg, priv_key, 'SHA-1'))
-    return signer.generate_cookie(policy=json.dumps(policy, separators=(",",":")))
+    return _generate_cf_cookie(
+        policy=json.dumps(policy, separators=(",",":")),
+        key_id=key_id,
+        rsa_signer=lambda msg: rsa.sign(msg, priv_key, 'SHA-1')
+    )
