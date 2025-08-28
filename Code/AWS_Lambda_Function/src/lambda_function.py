@@ -60,10 +60,11 @@ def lambda_handler(event, context):
     if method == 'GET' and raw_path.startswith('/playlist/'):
         return handle_playlist(event)
     
+    logger.warning(f"Method | route not found: {method} | {raw_path}", exc_info=True)
     return {
         "statusCode": 404,
         "headers": _cors_headers(),
-        "body": json.dumps({"error": "Route not found"})
+        "body": json.dumps({"error": "Internal Server Error"})
     }
 
 def handle_instance_status(event):
@@ -86,7 +87,7 @@ def handle_instance_status(event):
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
 
 def handle_turn_off_instance(event):
@@ -111,7 +112,7 @@ def handle_turn_off_instance(event):
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
 
 def handle_turn_on_instance(event):
@@ -132,11 +133,11 @@ def handle_turn_on_instance(event):
             "body": json.dumps({"action": "starting"})
         }
     except Exception as e:
-        logger.error(f"Error connecting EC2 instance: {str(e)}", exc_info=True)
+        logger.error(f"Error turning on the EC2 instance: {str(e)}", exc_info=True)
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
 
 def handle_list_videos(event):
@@ -178,10 +179,11 @@ def handle_list_videos(event):
         }
 
     except Exception as e:
+        logger.error(f"Error when handling list of videos: {str(e)}", exc_info=True)
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": str(e)})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
 
 def handle_auth_cookies(event):
@@ -256,10 +258,11 @@ def handle_playlist(event):
         segments.sort(key=lambda k: int(re.search(rf"{prefix_match}([0-9]+)\.ts$", k).group(1)))
 
         if not segments:
+            logger.error(f"Video {video_id} not found", exc_info=True)
             return {
-                "statusCode": 404,
+                "statusCode": 500,
                 "headers": _cors_headers(),
-                "body": json.dumps({"error": f"Video {video_id} not found"})
+                "body": json.dumps({"error": "Internal Server Error"})
             }
 
         playlist = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:6\n"
@@ -279,10 +282,11 @@ def handle_playlist(event):
         }
 
     except Exception as e:
+        logger.error(f"Error when handling playlist: {str(e)}", exc_info=True)
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": f"Internal error: {str(e)}"})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
 
 def validate_authorization(event):
@@ -293,28 +297,32 @@ def validate_authorization(event):
                  .get("claims", {})
         )
         if not claims:
-            return _unauthorized("Request without authentication context (missing claims).")
+            logger.warning(f"Request without authentication context (missing claims)", exc_info=True)
+            return _unauthorized()
 
         user_email = (claims.get("email") or claims.get("cognito:username") or "").strip().lower()
         if not user_email:
-            return _unauthorized("User email missing from token.")
+            logger.warning(f"User email missing from token", exc_info=True)
+            return _unauthorized()
 
         if ALLOWED_EMAILS and user_email not in ALLOWED_EMAILS:
-            return _unauthorized("Access denied: Unauthorized email")
+            logger.warning(f"Access denied: Unauthorized email", exc_info=True)
+            return _unauthorized()
 
         return None
     except Exception as e:
+        logger.error(f"Error validating authorization: {str(e)}", exc_info=True)
         return {
             "statusCode": 500,
             "headers": _cors_headers(),
-            "body": json.dumps({"error": f"Internal error: {str(e)}"})
+            "body": json.dumps({"error": "Internal Server Error"})
         }
     
-def _unauthorized(msg):
+def _unauthorized():
     return {
         "statusCode": 401,
         "headers": _cors_headers(),
-        "body": json.dumps({"error": msg})
+        "body": json.dumps({"Unauthorized"})
     }
 
 def _cors_headers_get_mpegurl():
