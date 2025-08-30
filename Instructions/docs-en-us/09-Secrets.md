@@ -31,7 +31,23 @@ openssl rsa -in private_key.pem -pubout -out public_key.pem
     - On the next page, under Secret name, give the secret a name. In the example here, it's called CloudFrontPrivateKey (yes, the name is bad, but it's what I created at the time)
     - On the next page, you can keep the default values, since you don't need to rotate these secrets
 
-### Important Notes: Take note of the name of both these secrets you just created
+### Important note: Take note of the name of both these secrets you just created
+
+We saved the private key in Secrets Manager, now we also need to save the public key. In this case, go to the CloudFront service
+
+- Go to the Public Keys menu and click the Create public key button
+  - Name: Give your public key a name (in my example, it was OwncastCookiePublicKey)
+  - Description - optional: If desired, describe the public key
+  - Key: Paste the fully generated public RSA key here
+  - Click the Create public key button
+
+### Important note: Make a note of the ID of the newly created public key
+
+- Go to the Key groups menu and click the Create key group button
+  - Name: Give your key group a name (in my example, it was OwncastKeyGroup)
+  - Description - optional: If desired, describe the key group
+  - Public keys: Select the newly created public key
+  - Click the Create key group button
 
 ---
 [⬅️ Previous: Digital certificate creation](08-Certificate.md) | [🏠 Index](../README.md) | [Next: Cognito configuration ➡️](10-Cognito.md)
