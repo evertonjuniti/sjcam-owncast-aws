@@ -61,8 +61,168 @@
       }
       ```
     - Then click the Test button
-    - If everything went well, you'll see the message Executing function: succeeded with a green background. If you click Details, you'll see the result of the call
-    - Everything seems to be working, but you could check the source code to test the other available methods and routes if you prefer. For example, /list-videos only changes the route; the rest of the JSON is the same
+    - If everything went well, you will see the message Executing function: succeeded with a green background, and if you click on Details you will see the result of the call, the result should be something like this:
+      ```
+      {
+        "statusCode": 200,
+        "headers": {
+          "Access-Control-Allow-Origin": "https://example.com",
+          "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Credentials": "true",
+          "Content-Type": "application/json"
+        },
+        "body": "{\"status\": \"stopped\"}"
+      }
+      ```
+      - The "status" attribute with the value "stopped" in the response body indicates that the call was able to check the status of the EC2 instances
+    - Let's test the other endpoints:
+      - PUT - /instance/turnon
+        - Request:
+        ```
+        {
+          "requestContext": {
+            "http": {
+              "method": "PUT"
+            }
+          },
+          "rawPath": "/instance/turnon"
+        }
+        ```
+        - Expected response:
+        ```
+        {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "https://example.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"action\": \"starting\"}"
+        }
+        ```
+        - You can check your instances on the EC2 service, both Owncast and Proxy instances should be powered on now
+      - PUT - /instance/turnoff
+        - Request:
+        ```
+        {
+          "requestContext": {
+            "http": {
+              "method": "PUT"
+            }
+          },
+          "rawPath": "/instance/turnoff"
+        }
+        ```
+        - Expected response:
+        ```
+        {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "https://example.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "application/json"
+          },
+          "body": "{\"action\": \"stopping\"}"
+        }
+        ```
+        - You can check your instances on EC2 service, both Owncast and Proxy instances should be stopping now
+      - GET - /auth-cookies
+        - Request:
+        ```
+        {
+          "requestContext": {
+            "http": {
+              "method": "GET"
+            }
+          },
+          "rawPath": "auth-cookies"
+        }
+        ```
+        - Expected response:
+        ```
+        {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "https://example.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "application/json"
+          },
+          "multiValueHeaders": {
+            "Set-Cookie": [
+              "CloudFront-Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9ldmVydG9ub2d1cmEuY29tL2hscy8wLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3NTY3Mjc2NDd9fX1dfQ__;Path=/;Domain=.example.com;Secure;HttpOnly;SameSite=None",
+              "CloudFront-Signature=Sj~HEy7Ljv5mf3J5x5n85mDXBFtC2cQKKuJj1n3jgbMcXbeNNaB~YUubHsSvvm9frCQCCycQxGkRJJanu0Ym3dV2VQyca7tC46yTElkfh9lhKQMZjkEgXF-ifTusunTZlEPl9DHW2C4x7MEB5QTd6CKjY~jgMH4H3yeBxi-VQcnIeuGv3qNDis-IOID0xhjeXhH7CSe5NP3I2XBI0Fq2-GvLbMfsidKJjkNp7-OyhTO1JsvU2RRGRGo5EUs31EuyYH30nC-CSsDZhWYz8MLQdoYtWXdtyh-x78Fex4eDd~V9-igWLMyBDHXyBSNYj0lESDRVSbzfotTky~OoIb-qyA__;Path=/;Domain=.example.com;Secure;HttpOnly;SameSite=None",
+              "CloudFront-Key-Pair-Id=K3KYD9LB8GV4A3;Path=/;Domain=.example.com;Secure;HttpOnly;SameSite=None"
+            ]
+          },
+          "body": ""
+        }
+        ```
+        - In this route, you are expected to receive Cookies, which will be used to access the video segments via CloudFront, which will be used by the video player
+      - GET - /list-videos
+        - Request:
+        ```
+        {
+          "requestContext": {
+            "http": {
+              "method": "GET"
+            }
+          },
+          "rawPath": "/list-videos"
+        }
+        ```
+        - Expected response:
+        ```
+        {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "https://example.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "application/json"
+          },
+          "body": "[{\"videoId\": \"offline\", \"dateTime\": \"2025-09-01 10:37:52 - offline\"}, {\"videoId\": \"KOOuOXuNg\", \"dateTime\": \"2025-08-28 14:51:31 - KOOuOXuNg\"}]"
+        }
+        ```
+        - In this route you are expected to receive a list of videos if you recorded some at the time of configuring the Owncast instance (where we configured it to use the SJCAM SJ11)
+      - GET - /playlist/{video-id}
+        - Request:
+        ```
+        {
+          "requestContext": {
+            "http": {
+              "method": "GET"
+            }
+          },
+          "rawPath": "/playlist/offline.m3u8",
+          "pathParameters": {
+            "video_id": "offline.m3u8"
+          }
+        }
+        ```
+        - Expected response:
+        ```
+        {
+          "statusCode": 200,
+          "headers": {
+            "Access-Control-Allow-Origin": "https://example.com",
+            "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            "Access-Control-Allow-Credentials": "true",
+            "Content-Type": "application/vnd.apple.mpegurl"
+          },
+          "body": "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:6\n#EXT-X-MEDIA-SEQUENCE:0\n#EXTINF:6.000,\nhttps://example.com/hls/0/stream-offline-0.ts\n#EXT-X-ENDLIST"
+        }
+        ```
+        - In this route you are expected to receive a list of video segments for the video Id you used in the call (in pathParameters)
+    - In a way, everything is working, these tests validate that the Lambda function can make the expected calls and that the role has the correct policies for accessing the EC2 instances and the Bucket
     - #### Let's undo the change we made for the test
     - In the editor's source code, go to the definition of the function called validate_authorization
     - Before the try, remove the statement:
