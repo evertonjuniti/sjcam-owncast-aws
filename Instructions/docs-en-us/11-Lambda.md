@@ -72,4 +72,4 @@
     - Then click the Deploy button
 
 ---
-[⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: CloudFront Configuration ➡️](12-CloudFront.md)
+[⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: API Gateway Configuration ➡️](12-API-Gateway.md)
