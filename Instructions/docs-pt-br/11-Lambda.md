@@ -73,4 +73,4 @@
     - Depois clique no botão Deploy
 
 ---
-[⬅️ Anterior: Configuração do Cognito](10-Cognito.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do CloudFront ➡️](12-CloudFront.md)
+[⬅️ Anterior: Configuração do Cognito](10-Cognito.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do API Gateway ➡️](12-API-Gateway.md)
