@@ -40,19 +40,17 @@
     - Click the Upload button and choose the lambda_package.zip file and then click the Save button
     - The lambda_function.py file will be updated, and several folders and files will appear in the Lambda function's code editor explorer in the AWS console
     - Lambda function deployment is usually done automatically
-  - Testing here is a bit laborious, but it's possible if you do it with Caution:
-    - In the editor's source code, go to the definition of the function called validate_authorization
-    - Before the try, place the statement:
-      ```
-      return None
-      ```
-    - Then click the Deploy button
-    - #### Attention: After you finish testing, remember to remove this code
-    - Now go to the Test tab
+  - To test, follow these instructions:
+    - Go to the Test tab
     - In the Event JSON text field, paste the following content:
       ```
       {
         "requestContext": {
+          "authorizer": {
+            "claims": {
+              "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+            }
+          },
           "http": {
             "method": "GET"
           }
@@ -82,6 +80,11 @@
         ```
         {
           "requestContext": {
+            "authorizer": {
+              "claims": {
+                "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+              }
+            },
             "http": {
               "method": "PUT"
             }
@@ -109,6 +112,11 @@
         ```
         {
           "requestContext": {
+            "authorizer": {
+              "claims": {
+                "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+              }
+            },
             "http": {
               "method": "PUT"
             }
@@ -136,6 +144,11 @@
         ```
         {
           "requestContext": {
+            "authorizer": {
+              "claims": {
+                "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+              }
+            },
             "http": {
               "method": "GET"
             }
@@ -170,6 +183,11 @@
         ```
         {
           "requestContext": {
+            "authorizer": {
+              "claims": {
+                "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+              }
+            },
             "http": {
               "method": "GET"
             }
@@ -197,6 +215,11 @@
         ```
         {
           "requestContext": {
+            "authorizer": {
+              "claims": {
+                "email": "[EMAIL_REGISTERED_WITHIN_COGNITO]"
+              }
+            },
             "http": {
               "method": "GET"
             }
@@ -223,13 +246,6 @@
         ```
         - In this route you are expected to receive a list of video segments for the video Id you used in the call (in pathParameters)
     - In a way, everything is working, these tests validate that the Lambda function can make the expected calls and that the role has the correct policies for accessing the EC2 instances and the Bucket
-    - #### Let's undo the change we made for the test
-    - In the editor's source code, go to the definition of the function called validate_authorization
-    - Before the try, remove the statement:
-      ```
-      return None
-      ```
-    - Then click the Deploy button
 
 ---
 [⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: API Gateway Configuration ➡️](12-API-Gateway.md)
