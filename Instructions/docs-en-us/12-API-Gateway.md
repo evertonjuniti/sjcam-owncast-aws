@@ -1,6 +1,268 @@
 # API Gateway configuration
 ![Owncast-API_Gateway.drawio.svg](/Images/Owncast-API_Gateway.drawio.svg)
 
+- In the API Gateway in the region you chose (the same as the VPC and Subnets), click the Create an API button
+  - From the options, choose REST API and click the Build button
+  - In API details, keep the New API option selected
+  - API name: specify a name for your API
+  - Description: optional
+  - API endpoint type: choose Edge-optimized
+  - IP address type: you can keep the IPv4 option
+  - In the left menu, go to the Authorizers item
+    - Click the Create authorizer button
+    - Authorizer name: specify a name for your authorizer
+    - Authorizer type: Cognito
+    - Cognito user pool: choose the region where you created the Cognito user pool, then in the field next to it, click on your user pool in the list
+    - Token source: Authorization
+    - Token validation - optional: you can leave it blank
+    - Click the Create authorizer button
+  - In the left menu, go to Resources, we will create the following items:
+    - In the resource "/", click the Create method button
+      ### ATTENTION: The inclusion of the OPTIONS method will be similar in the other resources that we will include in this API, therefore when I indicate in the other resources to do the same in this step, just execute the procedures below exactly the same way
+      - Method type: OPTIONS
+      - Integration type: Mock
+      - Do not change the other options and click the Create method button
+      - In the Method response tab, click the Edit button
+      - In Header name, we will add some headers, for each header you will click the Add header button and indicate a name, add the following:
+        - Access-Control-Allow-Credentials
+        - Access-Control-Allow-Headers
+        - Access-Control-Allow-Methods
+        - Access-Control-Allow-Origin
+        - Access-Control-Max-Age
+      - In Response body, click the Remove button
+      - Click the Save button
+    - In the Integration Response tab, click the Edit button
+      - In Header mappings, enter the following values ​​for each header according to the matches:
+        - Access-Control-Allow-Credentials: 'true'
+        - Access-Control-Allow-Headers: 'Content-Type, Authorization'
+        - Access-Control-Allow-Methods: 'GET, OPTIONS, PUT'
+        - Access-Control-Allow-Origin: 'https://[YOUR_DOMAIN]'
+        - Access-Control-Max-Age: '600'
+      - Expand Mapping templates and click the Remove button.
+      - Click the Save button.
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep the "/" item selected
+    - Resource name: auth-cookies
+    - CORS: leave unselected
+    - Click the Create resource button
+    - With the /auth-cookies resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /auth-cookies resource selected, click the Create method button to create the GET method
+      - Method type: GET
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected; in the field next to it, click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: Leave enabled
+        - Caching: Leave disabled
+      - Click the Create method button
+  - Click the Create resource button
+    - Proxy resource: Keep disabled
+    - Resource path: Keep the "/" item selected
+    - Resource name: instance
+    - CORS: Leave unselected
+    - Click the Create resource button
+    - With the /instance resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /instance resource selected, click the Create method button to create the GET method
+      - Method type: GET
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected; in the field next to it, click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: leave enabled
+        - Caching: leave disabled
+      - Click the Create method button
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep the "/instance/" item selected
+    - Resource name: turnoff
+    - CORS: leave unselected
+    - Click the Create resource button
+    - With the /instance/turnoff resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /instance/turnoff resource selected, click the Create method button to create the PUT method
+      - Method type: PUT
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected, in the field next to it click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: leave enabled
+        - Caching: leave disabled
+      - Click the Create method button
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep "/instance/" selected
+    - Resource name: turnon
+    - CORS: leave unselected
+    - Click the Create resource button
+    - With the /instance/turnon resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /instance/turnon resource selected, click the Create method button to create the PUT method
+      - Method type: PUT
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected; in the field next to it, click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: leave enabled
+        - Caching: leave disabled
+      - Click the Create method button
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep the "/" item selected
+    - Resource name: list-videos
+    - CORS: leave unselected
+    - Click the Create resource button
+    - With the /list-videos resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /list-videos resource selected, click the Create method button to create the GET method
+      - Method type: GET
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected, in the field next to it click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: leave enabled
+        - Caching: leave disabled
+      - Click the Create method button
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep the "/" item selected
+    - Resource name: playlist
+    - CORS: leave unselected
+    - Click the Create resource button
+  - Click the Create resource button
+    - Proxy resource: keep disabled
+    - Resource path: keep the "/playlist" item selected
+    - Resource name: {video_id}
+    - CORS: leave unselected
+    - Click the Create resource button
+    - With the /playlist/{video_id} resource selected, click the Create method button and repeat the procedure to create the OPTIONS method as done in the "/" resource
+    - With the /playlist/{video_id} resource selected, click the Create method button to create the GET method
+      - Method type: GET
+      - Integration type: Lambda function
+      - Lambda proxy integration: leave enabled
+      - Lambda function: leave the Region where you created your Lambda function selected, in the field next to it click to see the list of functions and select the function you created
+      - Integration timeout: you can keep the default (which is 29 seconds)
+      - Expand Method request settings
+        - Authorization: choose the Authorizer we created for Cognito from the list
+        - Leave the other fields as they are
+      - Expand HTTP request headers
+        - Click the Add Header button
+        - Name: Authorization
+        - Required: leave enabled
+        - Caching: leave disabled
+      - Click the Create method button
+  - To test a call to the API Gateway and validate if it's forwarding to our Lambda function, we'll use a JWT token for authentication through one of the users we registered in Cognito. To do this, follow these steps:
+    - Open another tab in your browser and go to the Cognito service
+    - Click on the user pool you created earlier
+    - In the left menu under "Applications", click on "App clients"
+    - Click on the app client from the list you created
+    - In "App client information", click the "Edit" button
+      - Ensure that the option "Sign in with username and password: ALLOW_USER_PASSWORD_AUTH" is selected and click the "Save changes" button
+      #### Important to remember to undo this configuration when you finish testing
+    - You will need to have the AWS CLI installed on your machine, check [this page](https://docs.aws.amazon.com/en_us/cli/latest/userguide/getting-started-install.html) to install the correct version for your operating system
+    - Open a command line terminal and use the following command to obtain a JWT token via Cognito, using one of the users you have already configured:
+      ```
+      aws cognito-idp initiate-auth --region sa-east-1 --client-id "[YOUR_APP_CLIENT_ID]" --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="[YOUR_USER_NAME_OR_EMAIL]",PASSWORD="[THE_PASSWORD_FOR_YOUR_USER]"
+      ```
+    - If the command executes successfully, you will see a response. The JWT token is contained in the "AccessToken" attribute. Copy the token's contents.
+    - Return to the API Gateway tab. We can test any resource, but for now, I'll suggest testing the /instance. Click the GET method below /instance
+    - Go to the Test tab
+      - In Headers, add the following content:
+        ```
+        Authorization:[THE_JWT_TOKEN_YOU_GOT]
+        ```
+      - Click the Test button
+      - If everything works, see below. You will receive a response to the call, a Status 200, and in the response body, the status of the EC2 instances (stopped or running)
+    - You can do other tests if you want with the other resources
+    - #### Let's undo the ALLOW_USER_PASSWORD_AUTH configuration
+      - Go back to the Cognito tab, in App clients select your App client and click the Edit button
+      - Uncheck the option Sign in with username and password: "ALLOW_USER_PASSWORD_AUTH"
+      - Click the Save changes button
+  - Return to the API Gateway tab, we will deploy what we configured so that it is possible to use the API we created
+    - If you are in Resources, click the Deploy API button
+    - Stage: select "New stage"
+    - When the Stage name field appears, enter a name, it can be Prod (you can have several different stages, but at this moment we will configure only one)
+    - Click the Deploy button
+    - #### Whenever you need to change something in your API, remember to deploy it. Since we created a Stage in this step, the next times you need to deploy, just choose the created Stage (Prod). There's no need to create new ones.
+  - In the menu on the left, click on the Custom domain names item
+    - Click the Add domain name button
+      - Domain name: specify a subdomain and your domain (e.g., owncastapi.[YOUR_DOMAIN])
+      - Leave the Public option selected
+      - Routing mode: select Routing rules only (recommended)
+      - API endpoint type: Edge-optimized (only for REST APIs)
+      - IP address type: IPv4 (but Dualstack is also acceptable)
+      - Minimum TLS version: TLS 1.2
+      - ACM certificate: select the digital certificate that was created in previous steps
+      - Click the Add domain name button
+    - After creating the Custom domain name, go to Routing rules and click the Add routing rule button
+      - In Conditions, leave as is
+      - In Actions, Target API is the name of the API you just created in API Gateway and Target stage is the stage that was created when we did the Deploy
+      - After selecting these options, click the Next button
+      - On the next screen, enter the value "1" in the Priority field, then click the Create routing rule button
 
+- Go to Route 53
+  - Enter your Hosted Zone
+  - Click on your Hosted Zone
+  - Click the Create record button
+    - Record name: enter the same subdomain you indicated in the Custom domain name (in the example above, it was owncastapi)
+    - Record type: A - Routes traffic to an IPv4 address and some AWS resources
+    - Alias: leave enabled
+    - Route traffic to: Alias ​​to API Gateway API
+      - Select the Region where you created the API Gateway
+      - In the next field, click and a CloudFront distribution will appear in the list, which refers to the Custom domain name we created for the API Gateway
+    - Routing policy: Simple routing
+    - Click the Create records button
+  - Now your API is available and accessible at https://owncastapi.[YOUR_DOMAIN]
+  - It is possible to test a DNS call from Route 53 that points to your API Gateway, more or less in the same way we did the direct test via API Gateway to test the Lambda function call, but there are some differences:
+    - Open another tab in your browser and go to the Cognito service
+    - Click on the user group you created earlier
+    - In the left menu under "Applications", click on "Application Clients"
+    - Click on the client application from the list you created
+    - Under "Application Client Information", click the "Edit" button
+      - Ensure that the option "Sign in with username and password: ALLOW_USER_PASSWORD_AUTH" is selected and click the "Save changes" button
+      #### Important to remember to undo this configuration when you finish testing
+    - You need to have the AWS CLI installed on your machine, check [this page](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/getting-started-install.html) to install the correct version for your operating system
+    - Open a command line terminal and use the following command to obtain a JWT token via Cognito, using one of the users you have already configured:
+      ```
+      aws cognito-idp initiate-auth --region sa-east-1 --client-id "[YOUR_APP_CLIENT_ID]" --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME="[YOUR_USER_NAME_OR_EMAIL]",PASSWORD="[THE_PASSWORD_FOR_YOUR_USER]"
+      ```
+    - If the command is executed successfully, you will see a response; the JWT token is contained in the "IdToken" attribute. Copy the token's content
+      #### Attention: This is different from the direct test in API Gateway, where you used the AccessToken; here we will use the IdToken
+    - You can use CURL or Postman to perform the test. The CURL command would look something like this:
+      ```
+      curl "https://owncastapi.[YOUR_DOMAIN]/instance" -H "Authorization:[THE_IdToken_VALUE]"
+      ```
+    - If you get a response '{"status": "stopped"}' (for example), it indicates that it worked
+    - #### Let's undo the ALLOW_USER_PASSWORD_AUTH configuration
+      - Go back to the Cognito tab, in App clients select your App client and click the Edit button
+      - Uncheck the option Sign in with username and password: "ALLOW_USER_PASSWORD_AUTH"
+      - Click the Save changes button
 ---
 [⬅️ Previous: Lambda function configuration](11-Lambda.md) | [🏠 Index](../README.md) | [Next: CloudFront Configuration ➡️](13-CloudFront.md)
