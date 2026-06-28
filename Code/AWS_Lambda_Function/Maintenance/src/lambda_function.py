@@ -245,9 +245,9 @@ def lambda_handler(event, context):
             logger.error(f"[TEARDOWN 1/6] FAILED - {str(e)}", exc_info=True)
             results['instance_stop'] = {'error': str(e)}
 
-        logger.info("[TEARDOWN 2/6] Disassociating Elastic IP from Owncast instance")
+        logger.info("[TEARDOWN 2/6] Disassociating Elastic IP from Owncast and restoring to Proxy instance")
         try:
-            results['elastic_ip_remove'] = _disassociate_elastic_ip()
+            results['elastic_ip_remove'] = _restore_elastic_ip_to_proxy()
             logger.info(f"[TEARDOWN 2/6] OK - action={results['elastic_ip_remove'].get('action')}")
         except ClientError as e:
             logger.error(f"[TEARDOWN 2/6] FAILED - {str(e)}", exc_info=True)
@@ -910,6 +910,30 @@ def _associate_elastic_ip():
     )
     logger.info(f"  [ADD ] Elastic IP {public_ip} ({ELASTIC_IP_ALLOC_ID}) associated with {OWNCAST_INSTANCE_ID}")
     return {'action': 'associated', 'allocation_id': ELASTIC_IP_ALLOC_ID, 'public_ip': public_ip}
+
+
+def _restore_elastic_ip_to_proxy():
+    """Disassociate ELASTIC_IP_ALLOC_ID from Owncast and re-associate it back to the Proxy instance."""
+    logger.info(f"  Checking current association of Elastic IP allocation {ELASTIC_IP_ALLOC_ID}")
+    response = ec2.describe_addresses(AllocationIds=[ELASTIC_IP_ALLOC_ID])
+    address = response['Addresses'][0]
+    public_ip = address.get('PublicIp', 'unknown')
+
+    # Disassociate from current instance (Owncast) if associated
+    assoc_id = address.get('AssociationId')
+    if assoc_id:
+        ec2.disassociate_address(AssociationId=assoc_id)
+        logger.info(f"  [DETACH] Elastic IP {public_ip} disassociated from Owncast instance")
+    else:
+        logger.info(f"  [SKIP ] Elastic IP {public_ip} was not associated, skipping disassociation")
+
+    # Re-associate back to the Proxy instance
+    ec2.associate_address(
+        InstanceId=PROXY_INSTANCE_ID,
+        AllocationId=ELASTIC_IP_ALLOC_ID
+    )
+    logger.info(f"  [ADD ] Elastic IP {public_ip} ({ELASTIC_IP_ALLOC_ID}) restored to Proxy instance {PROXY_INSTANCE_ID}")
+    return {'action': 'restored_to_proxy', 'allocation_id': ELASTIC_IP_ALLOC_ID, 'public_ip': public_ip}
 
 
 def _disassociate_elastic_ip():

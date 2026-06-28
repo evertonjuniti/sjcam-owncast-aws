@@ -41,6 +41,32 @@
     - Role name: Give the role a name (in my case, it was called OwncastProxyRoute53CertificateRole)
     - You can leave the other fields at their default values
 
+- [Optional] Create a policy to enable automated maintenance for the Proxy and Owncast EC2 instances
+  - Use the template file from this repository at [Code -> AWS_IAM -> MaintenanceLambda_Policy.txt](Code/AWS_IAM/MaintenanceLambda_Policy.txt)
+    - Replace the `[YourRegion]` tag with the same region where your VPC and Subnet are located
+    - Replace the `[YourAccount]` tag with your AWS account ID (you can find this in the top-right corner of the AWS Console; use only the numbers)
+    - Replace the `[PublicSubnetNaclId]` tag with the ID of your VPC's Public Subnet
+    - Replace the `[PrivateSubnetNaclId]` tag with the ID of your VPC's Private Subnet
+    - Replace the `[PrivateRouteTableId]` tag with the ID of the Route Table associated with your VPC's Private Subnet
+    - Replace the `[ProxyInstanceId]` tag with the EC2 instance ID for the Public Subnet Proxy (remember, I told you to note this down!)
+    - Replace the `[OwncastInstanceId]` tag with the EC2 instance ID for the Private Subnet Owncast instance (remember, I told you to note this down!)
+    - Replace the `[SharedIAMRoleName]` tag with the name of the previously created Role (the one for the digital certificate, if you chose to create that role)
+    - Replace the `[MaintenanceSGId]` tag with the ID of the Security Group you created for instance maintenance
+    - Replace the `[ExistingProxySGId]` tag with the ID of the Security Group you created for the Proxy instance
+    - Replace the `[ExistingOwncastSGId]` tag with the ID of the Security Group you created for the Owncast instance
+    - Replace the `[MaintenanceLambdaFunctionName]` tag with the name of the maintenance Lambda Function (you can optionally create this in [Lambda Function Configuration](11-Lambda.md))
+    - On the next page, name your policy (in my case, I named it OwncastMaintenancePolicy)
+
+- [Optional] Create a Role to perform automated maintenance on the Proxy and Owncast EC2 instances
+  - Trusted entity type: AWS Service
+  - Use case: EC2 (keep the EC2 option selected from the list)
+  - Permission policies: select
+    - The maintenance policy name (in this example, it is named OwncastMaintenancePolicy [Customer managed])
+    - Make sure the checkbox for the aforementioned policy remains selected
+  - Role details:
+    - Role name: assign a name to the role (in my case, I used OwncastMaintenanceRole)
+    - You can leave the default values ​​for the remaining fields
+
 - In the Users menu, create a new user
   - User name: Give it a name (in my example, it was Owncast)
   - Provide user access to the AWS Management Console - optional: leave unchecked

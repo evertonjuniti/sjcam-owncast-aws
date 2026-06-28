@@ -247,5 +247,122 @@
         - In this route you are expected to receive a list of video segments for the video Id you used in the call (in pathParameters)
     - In a way, everything is working, these tests validate that the Lambda function can make the expected calls and that the role has the correct policies for accessing the EC2 instances and the Bucket
 
+### Optional: Lambda function for maintenance
+
+As previously mentioned in [Owncast EC2 instance configuration](05-Owncast-EC2-instance-configuration.md) and [Proxy EC2 instance configuration](06-Proxy-EC2-instance-configuration.md), this option enables automated updates for both the Owncast EC2 instance (in a private subnet) and the Proxy instance (in a public subnet).
+
+In this case, the Lambda function has three different modes:
+
+- owncast-os-update
+  - Modifies the route table to allow the private subnet to access the internet
+  - Adds inbound and outbound rules to the private subnet's NACL
+  - Associates the maintenance Security Group with the EC2 instance running Owncast
+  - Associates a maintenance Role with the EC2 instance running Owncast
+  - Associates the existing public IP (previously linked to the Proxy EC2 instance) with the EC2 instance running Owncast
+  - Starts the EC2 instance running Owncast
+  - Accesses the instance via SSM
+  - Executes the following commands:
+    ```
+    sudo apt update -y
+    sudo apt upgrade -y
+    ```
+  - After command execution, exits the instance, stops the instance, and reverts all previously mentioned steps
+- proxy-os-update
+  - Adds inbound and outbound rules to the public subnet's NACL
+  - Associates the maintenance Security Group with the EC2 instance running HAProxy
+  - Associates a maintenance Role with the EC2 instance running HAProxy
+  - Starts the EC2 instance running HAProxy
+  - Accesses the instance via SSM
+  - Executes the following commands:
+    ```
+    sudo apt update -y
+    sudo apt upgrade -y
+    ```
+  - After executing the commands, exits the instance, stops the instance, and reverses all the previously mentioned steps
+- proxy-cert-renew (this mode applies only if you have chosen to use DNS with HAProxy alongside a digital certificate)
+  - Adds inbound and outbound rules to the public subnet's NACL
+  - Associates the maintenance Security Group with the EC2 instance running HAProxy
+  - Associates a maintenance Role with the EC2 instance running HAProxy
+  - Starts the EC2 instance running HAProxy
+  - Accesses the instance via SSM
+  - Executes the following commands:
+    ```
+    sudo certbot renew --force-renewal
+    sudo bash -c 'cat /etc/letsencrypt/live/[YOUR_DOMAIN]/fullchain.pem /etc/letsencrypt/live/[YOUR_DOMAIN]/privkey.pem > /etc/haproxy/certs/[YOUR_DOMAIN].pem'
+    sudo systemctl restart haproxy
+    ```
+  - After executing the commands, exits the instance, stops the instance, and reverses all the previously mentioned steps
+
+Here is what needs to be done to create this new Lambda function:
+
+- Create a new Lambda function in the same Region as your network infrastructure (where your VPC and subnets are located)
+  - Choose the "Author from scratch" option
+  - Function name: choose a name for your Lambda function (in my example, I used `OwncastMaintenance`—yes, it's a terrible name)
+  - Runtime: choose Python (at the time I created it, version 3.14 was available)
+  - Architecture: you can use x86_64
+  - Under the Permissions tab, expand "Change default execution role"
+    - Execution role: Use an existing role
+    - Existing role: use the role you created for maintenance (in my example, the name was `OwncastMaintenanceRole`)
+  - Leave the other options at their default values, then click the "Create function" button
+  - You can ignore the "Getting started" screen if it appears
+
+- Before looking at the code, go to the Configuration tab
+  - In the General configuration menu, click the Edit button
+    - Timeout: change from 0 min 3 sec to 15 min 00 sec (i.e., the timeout will be 15 minutes, which is usually the maximum allowed)
+    - Leave the other options as they are and click the Save button
+  - In the Environment variables menu, click the Edit button
+    - Click the **Add environment variable** button 11 times; we will create 11 environment variables. Below are the names for each variable (please do not change them) and what their values ​​should be:
+      - ELASTIC_IP_ALLOC_ID: [the Elastic IP allocation ID]
+      - INSTANCE_PROFILE_NAME: [the name of the digital certificate update role; in my case, it was OwncastProxyRoute53CertificateRole]
+      - INTERNET_GATEWAY_ID: [the VPC Internet Gateway ID]
+      - MAINTENANCE_SG_ID: [the Maintenance Security Group ID]
+      - OWNCAST_INSTANCE_ID: [your Owncast instance ID]
+      - PRIVATE_NACL_ID: [the NACL ID associated with the Private Subnet]
+      - PRIVATE_ROUTE_TABLE_ID: [the Route Table ID associated with the Private Subnet]
+      - PROXY_DOMAIN: [the Route 53 domain name related to the Owncast streaming address]
+      - PROXY_INSTANCE_ID: [your Proxy instance ID]
+      - PUBLIC_NACL_ID: [the NACL ID associated with the Public Subnet]
+      - REGION: [your infrastructure region ID]
+    - Finally, click the Save button
+
+- Now go to the Code tab
+  - You will see what looks like a code editor; there, you will find a tab named lambda_function.py
+    - In [Code -> AWS_Lambda_Function -> Maintenance](Code/AWS_Lambda_Function/Maintenance), you will find the Lambda function source code inside the src folder (a file named lambda_function.py), a buildspec.yml file that can be used in a CodePipeline build workflow, and a lambda_package.zip file ready for upload to the AWS console
+    - In the AWS console, while still on the Code tab, click the Upload from button and then select the .zip file option
+    - Click the Upload button, select the lambda_package.zip file, and then click the Save button
+    - The lambda_function.py file will be updated, and several folders and files will appear in the code editor's explorer within the AWS console
+    - Generally, the Lambda function is deployed automatically
+  - To test, follow these instructions:
+    - Go to the Test tab.
+    - In the Event JSON text field, paste the following content:
+      ```
+      {
+        "mode": "owncast-os-update"
+      }
+      ```
+    - Then, click the Test button.
+    - If successful, you will see the message "Executing function: succeeded" with a green background; additionally, if you click Details, you will see the call result (an execution log), and you can also click the CloudWatch Log Group link to view the execution log in detail.
+    - Let's test the other execution options:
+      ```
+      {
+        "mode": "proxy-os-update"
+      }
+      ```
+      ```
+      {
+        "mode": "proxy-cert-renew"
+      }
+        ```
+      - Depending on the frequency of updates, the time the Lambda Function takes to execute the commands may vary; this is why the function's execution timeout is configured for up to 15 minutes.
+      - Another important point concerns separating the execution tasks rather than performing everything at once: depending on what needs updating, running everything simultaneously could exceed the 15-minute execution limit, resulting in an error.
+
+My recommendation is to perform these updates at least once a month, in the following order:
+
+1) owncast-os-update
+2) proxy-os-update
+3) proxy-cert-renew (note that this one depends on whether you chose to use a digital certificate)
+
+Ideally, allow at least 15 minutes between executions to ensure each update completes successfully.
+
 ---
 [⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: API Gateway Configuration ➡️](12-API-Gateway.md)
