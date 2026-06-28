@@ -7,7 +7,8 @@
             "Action": [
                 "ec2:DescribeNetworkAcls",
                 "ec2:DescribeInstances",
-                "ec2:DescribeIamInstanceProfileAssociations"
+                "ec2:DescribeIamInstanceProfileAssociations",
+                "ec2:DescribeRouteTables"
             ],
             "Resource": "*"
         },
@@ -18,7 +19,19 @@
                 "ec2:CreateNetworkAclEntry",
                 "ec2:DeleteNetworkAclEntry"
             ],
-            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:network-acl/[PublicSubnetNaclId]"
+            "Resource": [
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:network-acl/[PublicSubnetNaclId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:network-acl/[PrivateSubnetNaclId]"
+            ]
+        },
+        {
+            "Sid": "AllowRouteTableModification",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateRoute",
+                "ec2:DeleteRoute"
+            ],
+            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:route-table/[PrivateRouteTableId]"
         },
         {
             "Sid": "AllowIamInstanceProfileAssignment",
@@ -28,13 +41,16 @@
                 "ec2:ReplaceIamInstanceProfileAssociation",
                 "ec2:DisassociateIamInstanceProfile"
             ],
-            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]"
+            "Resource": [
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[OwncastInstanceId]"
+            ]
         },
         {
-            "Sid": "AllowPassRoleToProxy",
+            "Sid": "AllowPassRole",
             "Effect": "Allow",
             "Action": "iam:PassRole",
-            "Resource": "arn:aws:iam::[YourAccountId]:role/[ProxyIAMRoleName]",
+            "Resource": "arn:aws:iam::[YourAccountId]:role/[SharedIAMRoleName]",
             "Condition": {
                 "StringEquals": {
                     "iam:PassedToService": "ec2.amazonaws.com"
@@ -42,16 +58,28 @@
             }
         },
         {
-            "Sid": "AllowProxyInstanceSgModification",
+            "Sid": "AllowInstanceSgModification",
             "Effect": "Allow",
             "Action": [
                 "ec2:ModifyInstanceAttribute"
             ],
             "Resource": [
                 "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[OwncastInstanceId]",
                 "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[MaintenanceSGId]",
-                "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[ExistingProxySGId]"
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[ExistingProxySGId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[ExistingOwncastSGId]"
             ]
+        },
+        {
+            "Sid": "AllowElasticIpManagement",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeAddresses",
+                "ec2:AssociateAddress",
+                "ec2:DisassociateAddress"
+            ],
+            "Resource": "*"
         },
         {
             "Sid": "AllowEC2StartStop",
@@ -60,7 +88,10 @@
                 "ec2:StartInstances",
                 "ec2:StopInstances"
             ],
-            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]"
+            "Resource": [
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[OwncastInstanceId]"
+            ]
         },
         {
             "Sid": "AllowSSMSendCommand",
@@ -70,6 +101,7 @@
             ],
             "Resource": [
                 "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[OwncastInstanceId]",
                 "arn:aws:ssm:[YourRegion]::document/AWS-RunShellScript"
             ]
         },
@@ -94,3 +126,4 @@
         }
     ]
 }
+

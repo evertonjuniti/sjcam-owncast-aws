@@ -233,5 +233,13 @@ Pronto! Agora sabemos que a instância EC2 do Owncast está funcionando perfeita
 ### Não esqueça de desfazer as regras conforme as instruções acima, isso é necessário para assegurar acessos mínimos para evitar riscos de acessos indesejados
 ### Lembre de desligar as instâncias para não gerar cobranças adicionais
 
+## Atualizações recorrentes
+
+Lembre-se de atualizar de forma recorrente esta instância EC2 para obter as atualizações de sistema operacional e também de todo software instalado na máquina.
+
+Acima já está explicado como fazer a atualização, que requer os passos de alteração no NACL, atribuição de Security Group e role na instância EC2, mas também há uma opção mais automatizada para fazer isso.
+
+Em [Configuração da função Lambda](11-Lambda.md) você encontrará instruções para automatizar essas atualizações através da criação de uma nova Policy e Role e Função Lambda que fará as alterações de infraestrutura necessárias para conexão à instância via SSM e execução de todos os comandos necessários.
+
 ---
 [⬅️ Anterior: Configuração de policies, roles e usuário do IAM](04-IAM.md) | [🏠 Índice](../README.md) | [Próximo: Configuração da instância EC2 de Proxy ➡️](06-Proxy-EC2-instance-configuration.md)

@@ -234,5 +234,13 @@ That's it! Now we know the Owncast EC2 instance is working perfectly!
 ### Don't forget to undo the rules as per the instructions above, this is necessary to ensure minimum access to avoid the risk of unwanted access
 ### Remember to turn off the instances to avoid generating additional charges
 
+## Recurring updates
+
+Remember to regularly update this EC2 instance to ensure the operating system and all installed software remain up to date.
+
+The update process—which involves modifying the NACL and assigning the appropriate Security Group and IAM role to the EC2 instance—was explained earlier; however, there is also a more automated option available.
+
+In the [Lambda function configuration](11-Lambda.md) section, you will find instructions for automating these updates. This involves creating a new Policy, Role, and Lambda function that will perform the necessary infrastructure changes to connect to the instance via SSM and execute all required commands.
+
 ---
 [⬅️ Previous: Configuring IAM policies, roles, and users](04-IAM.md) | [🏠 Index](../README.md) | [Next: Proxy EC2 instance configuration ➡️](06-Proxy-EC2-instance-configuration.md)

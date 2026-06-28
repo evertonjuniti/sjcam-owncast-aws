@@ -244,5 +244,15 @@ exit
 ### Don't forget to undo the rules as instructed above. This is necessary to ensure minimal access and avoid the risk of unwanted access
 ### Remember to shut down the instances to avoid incurring additional charges
 
+## Recurring updates
+
+Remember to regularly update this EC2 instance to ensure the operating system and all installed software remain up to date.
+
+Additionally, if you chose to use a digital certificate with HAProxy linked to your DNS, you must update that certificate frequently.
+
+The update process—which involves modifying the NACL and assigning the appropriate Security Group and IAM role to the EC2 instance—has already been explained above; however, there is also a more automated option available.
+
+In the [Lambda function configuration](11-Lambda.md) section, you will find instructions for automating these updates. This involves creating a new Policy, Role, and Lambda function that will perform the infrastructure changes required to connect to the instance via SSM and execute all necessary commands.
+
 ---
 [⬅️ Previous: Configuring EC2 instances](05-Owncast-EC2-instance-configuration.md) | [🏠 Index](../README.md) | [Next: Route 53 configuration ➡️](07-Route53.md)
