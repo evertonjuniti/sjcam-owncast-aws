@@ -35,7 +35,7 @@
 
 - Now go to the Code tab
   - You'll see what looks like a code editor; there will be a tab called lambda_function.py
-    - In [Code -> AWS_Lambda_Function](Code/AWS_Lambda_Function), you'll find the Lambda function source code inside the src folder (a file called lambda_function.py), a buildspec.yml file that can be used in a build flow with CodePipeline, and a lambda_package.zip file, ready to upload to the AWS console
+    - In [Code -> AWS_Lambda_Function -> Playlist](Code/AWS_Lambda_Function/Playlist), you'll find the Lambda function source code inside the src folder (a file called lambda_function.py), a buildspec.yml file that can be used in a build flow with CodePipeline, and a lambda_package.zip file, ready to upload to the AWS console
     - In the AWS console, still in the Code tab, click the Upload from button and then click the .zip file option
     - Click the Upload button and choose the lambda_package.zip file and then click the Save button
     - The lambda_function.py file will be updated, and several folders and files will appear in the Lambda function's code editor explorer in the AWS console

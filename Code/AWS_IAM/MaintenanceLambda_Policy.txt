@@ -1,0 +1,96 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DescribeOnly",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeNetworkAcls",
+                "ec2:DescribeInstances",
+                "ec2:DescribeIamInstanceProfileAssociations"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowNaclEntry",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateNetworkAclEntry",
+                "ec2:DeleteNetworkAclEntry"
+            ],
+            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:network-acl/[PublicSubnetNaclId]"
+        },
+        {
+            "Sid": "AllowIamInstanceProfileAssignment",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AssociateIamInstanceProfile",
+                "ec2:ReplaceIamInstanceProfileAssociation",
+                "ec2:DisassociateIamInstanceProfile"
+            ],
+            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]"
+        },
+        {
+            "Sid": "AllowPassRoleToProxy",
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::[YourAccountId]:role/[ProxyIAMRoleName]",
+            "Condition": {
+                "StringEquals": {
+                    "iam:PassedToService": "ec2.amazonaws.com"
+                }
+            }
+        },
+        {
+            "Sid": "AllowProxyInstanceSgModification",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:ModifyInstanceAttribute"
+            ],
+            "Resource": [
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[MaintenanceSGId]",
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:security-group/[ExistingProxySGId]"
+            ]
+        },
+        {
+            "Sid": "AllowEC2StartStop",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:StartInstances",
+                "ec2:StopInstances"
+            ],
+            "Resource": "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]"
+        },
+        {
+            "Sid": "AllowSSMSendCommand",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:SendCommand"
+            ],
+            "Resource": [
+                "arn:aws:ec2:[YourRegion]:[YourAccountId]:instance/[ProxyInstanceId]",
+                "arn:aws:ssm:[YourRegion]::document/AWS-RunShellScript"
+            ]
+        },
+        {
+            "Sid": "AllowSSMStatusCheck",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetCommandInvocation",
+                "ssm:DescribeInstanceInformation"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowLambdaLogging",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:[YourRegion]:[YourAccountId]:log-group:/aws/lambda/[MaintenanceLambdaFunctionName]:*"
+        }
+    ]
+}

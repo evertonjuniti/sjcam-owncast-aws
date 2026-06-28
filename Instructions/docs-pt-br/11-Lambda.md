@@ -36,7 +36,7 @@
 
 - Agora vá na guia Code
   - Você verá como se fosse um editor de código, lá haverá uma aba chamada lambda_function.py
-    - Em [Code -> AWS_Lambda_Function](Code/AWS_Lambda_Function) você encontrará o código-fonte da função Lambda dentro da pasta src (arquivo chamado lambda_function.py), um arquivo buildspec.yml que poderá ser utilizado em um fluxo de Build com o CodePipeline e um arquivo lambda_package.zip, pronto para upload no console da AWS
+    - Em [Code -> AWS_Lambda_Function -> Playlist](Code/AWS_Lambda_Function/Playlist) você encontrará o código-fonte da função Lambda dentro da pasta src (arquivo chamado lambda_function.py), um arquivo buildspec.yml que poderá ser utilizado em um fluxo de Build com o CodePipeline e um arquivo lambda_package.zip, pronto para upload no console da AWS
     - No console da AWS, ainda na guia Code, clique no botão Upload from e depois clique na opção .zip file
     - Clique no botão Upload e escolha o arquivo lambda_package.zip e depois clique no botão Save
     - O arquivo lambda_function.py será atualizado e várias pastas e arquivos aparecerão no Explorer do editor de código da função Lambda no console da AWS
