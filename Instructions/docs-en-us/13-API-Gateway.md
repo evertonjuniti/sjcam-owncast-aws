@@ -265,4 +265,4 @@
       - Uncheck the option Sign in with username and password: "ALLOW_USER_PASSWORD_AUTH"
       - Click the Save changes button
 ---
-[⬅️ Previous: Lambda function configuration](11-Lambda.md) | [🏠 Index](../README.md) | [Next: CloudFront Configuration ➡️](13-CloudFront.md)
+[⬅️ Previous: EventBridge configuration](12-EventBridge.md) | [🏠 Index](../README.md) | [Next: CloudFront Configuration ➡️](14-CloudFront.md)

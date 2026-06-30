@@ -34,5 +34,6 @@
 - [Criação das Secrets](docs-pt-br/09-Secrets.md) | [Creation of Secrets](docs-en-us/09-Secrets.md)
 - [Configuração do Cognito](docs-pt-br/10-Cognito.md) | [Cognito configuration](docs-en-us/10-Cognito.md)
 - [Configuração da função Lambda](docs-pt-br/11-Lambda.md) | [Lambda function configuration](docs-en-us/11-Lambda.md)
-- [Configuração do API Gateway](docs-pt-br/12-API-Gateway.md) | [API Gateway Configuration](docs-en-us/12-API-Gateway.md)
-- [Configuração do CloudFront](docs-pt-br/13-CloudFront.md) | [CloudFront Configuration](docs-en-us/13-CloudFront.md)
+- [Configuração do EventBridge](docs-pt-br/12-EventBridge.md) | [EventBridge Configuration](docs-en-us/12-EventBridge.md)
+- [Configuração do API Gateway](docs-pt-br/13-API-Gateway.md) | [API Gateway Configuration](docs-en-us/13-API-Gateway.md)
+- [Configuração do CloudFront](docs-pt-br/14-CloudFront.md) | [CloudFront Configuration](docs-en-us/14-CloudFront.md)

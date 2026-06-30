@@ -266,4 +266,4 @@
       - Desmarque a opção Sign in with username and password: "ALLOW_USER_PASSWORD_AUTH"
       - Clique no botão Save changes
 ---
-[⬅️ Anterior: Configuração do Cognito](11-Lambda.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do CloudFront ➡️](13-CloudFront.md)
+[⬅️ Anterior: Configuração do EventBridge](12-EventBridge.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do CloudFront ➡️](14-CloudFront.md)

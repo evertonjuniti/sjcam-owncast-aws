@@ -365,4 +365,4 @@ My recommendation is to perform these updates at least once a month, in the foll
 Ideally, allow at least 15 minutes between executions to ensure each update completes successfully.
 
 ---
-[⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: API Gateway Configuration ➡️](12-API-Gateway.md)
+[⬅️ Previous: Cognito configuration](10-Cognito.md) | [🏠 Index](../README.md) | [Next: EventBridge Configuration ➡️](12-EventBridge.md)

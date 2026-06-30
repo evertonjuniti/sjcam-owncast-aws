@@ -366,4 +366,4 @@ Minha recomendação é fazer essas atualizações 1 vez por mês pelo menos, na
 De preferência dê ao menos uns 15 minutos entre as execuções, para garantir que as atualizações foram feitas com sucesso individualmente.
 
 ---
-[⬅️ Anterior: Configuração do Cognito](10-Cognito.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do API Gateway ➡️](12-API-Gateway.md)
+[⬅️ Anterior: Configuração do Cognito](10-Cognito.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do EventBridge ➡️](12-EventBridge.md)

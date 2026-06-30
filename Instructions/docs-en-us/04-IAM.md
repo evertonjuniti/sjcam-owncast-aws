@@ -67,6 +67,21 @@
     - Role name: assign a name to the role (in my case, I used OwncastMaintenanceRole)
     - You can leave the default values ​​for the remaining fields
 
+- [Optional] Create a policy to automatically stop the Proxy and Owncast EC2 instances
+  - Use the template from this repository at [Code -> AWS_IAM -> OwncastStopEC2Instances_Policy.txt](Code/AWS_IAM/OwncastStopEC2Instances_Policy.txt)
+    - On the next page, name your policy (I named mine OwncastStopEC2InstancesPolicy)
+
+- [Optional] Create a Role to automatically shut down the Proxy and Owncast EC2 instances
+  - Trusted entity type: Custom trust policy
+    - Custom trust policy: use the template from the file in this repository at [Code -> AWS_IAM -> OwncastStopEC2Instances_TrustRelationship.txt](Code/AWS_IAM/OwncastStopEC2Instances_TrustRelationship.txt)
+  - Click the Next button
+  - Permission policies: select
+    - The name of the automatic shutdown policy; in this example, it is named OwncastStopEC2InstancesPolicy (Customer managed)
+    - Make sure the checkbox for the aforementioned policy remains selected
+  - Role details:
+    - Role name: assign a name to the role (in my case, I used OwncastStopEC2InstancesRole)
+    - You can leave the default values ​​for the remaining fields
+
 - In the Users menu, create a new user
   - User name: Give it a name (in my example, it was Owncast)
   - Provide user access to the AWS Management Console - optional: leave unchecked

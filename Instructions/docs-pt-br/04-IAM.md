@@ -67,6 +67,21 @@
     - Role name: dê um nome para a role (no meu caso ficou o nome OwncastMaintenanceRole)
     - Demais campos pode deixar os valores default
 
+- [Opcional] Crie uma policy para poder desligar automaticamente as instâncias EC2 de Proxy e do Owncast
+  - Use o template do arquivo deste repostiório em [Code -> AWS_IAM -> OwncastStopEC2Instances_Policy.txt](Code/AWS_IAM/OwncastStopEC2Instances_Policy.txt)
+    - Na próxima página, dê um nome para a sua policy (no meu caso ficou o nome OwncastStopEC2InstancesPolicy)
+
+- [Opcional] Crie uma Role para poder desligar automaticamente as intâncias EC2 de Proxy e do Owncast
+  - Trusted entity type: Custom trust policy
+    - Custom trust policy: use o template do arquivo deste repositório em [Code -> AWS_IAM -> OwncastStopEC2Instances_TrustRelationship.txt](Code/AWS_IAM/OwncastStopEC2Instances_TrustRelationship.txt)
+  - Clique no botão Next
+  - Permission policies selecione:
+    - O nome da Policy de desligamento automático, no exemplo aqui se chama OwncastStopEC2InstancesPolicy (Customer managed)
+    - Lembre-se de deixar checada a caixa de seleção da policy acima citada
+  - Role details:
+    - Role name: dê um nome para a role (no meu caso ficou o nome OwncastStopEC2InstancesRole )
+    - Demais campos pode deixar os valores default
+
 - No menu Users, crie um novo usuário
   - User name: dê algum nome (no meu exemplo ficou Owncast)
   - Provide user access to the AWS Management Console - optional: deixe desmarcado

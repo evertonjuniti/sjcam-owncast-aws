@@ -4,4 +4,4 @@
 
 
 ---
-[⬅️ Previous: API Gateway Configuration](12-API-Gateway.md) | [🏠 Index](../README.md)
+[⬅️ Previous: API Gateway Configuration](13-API-Gateway.md) | [🏠 Index](../README.md)
