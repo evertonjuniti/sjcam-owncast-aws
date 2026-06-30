@@ -1,5 +1,5 @@
 # Configuring EC2 instances
-![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+![Owncast-Instances.svg](/Images/Owncast-Instances.svg)
 
 In this step we will configure the EC2 instance related to Owncast for installing and configuring Owncast
 

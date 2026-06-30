@@ -1,5 +1,5 @@
 # Cognito configuration
-![Owncast-Cognito.drawio.svg](/Images/Owncast-Cognito.drawio.svg)
+![Owncast-Cognito.svg](/Images/Owncast-Cognito.svg)
 
 - In Cognito, in the region you chose (the same as the VPC and Subnets), go to the User Pools menu and create a new user pool
   - Application type: Single-page application (SPA)

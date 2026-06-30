@@ -1,5 +1,5 @@
 # Configuração de rede
-![Owncast-Network.drawio.svg](/Images/Owncast-Network.drawio.svg)
+![Owncast-Network.svg](/Images/Owncast-Network.svg)
 
 - Escolhi a região sa-east-1 para minha estrutura, você pode escolher o que preferir
 - Estou usando VPC default da minha conta

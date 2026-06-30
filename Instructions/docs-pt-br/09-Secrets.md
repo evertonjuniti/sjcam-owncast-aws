@@ -1,5 +1,5 @@
 # Criação das Secrets
-![Owncast-SecretsManager.drawio.svg](/Images/Owncast-SecretsManager.drawio.svg)
+![Owncast-SecretsManager.svg](/Images/Owncast-SecretsManager.svg)
 
 Há um pré-requisito para uma das secrets, que envolve a geração do par de chaves privada e pública do tipo RSA.
 

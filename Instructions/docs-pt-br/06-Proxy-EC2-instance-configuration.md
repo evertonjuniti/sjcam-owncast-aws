@@ -1,5 +1,5 @@
 # Configuração da instância EC2 de Proxy
-![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+![Owncast-Instances.svg](/Images/Owncast-Instances.svg)
 
 Nesta etapa iremos configurar a instância EC2 referente ao Proxy para instalação e configuração do HAProxy
 

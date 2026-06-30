@@ -1,5 +1,5 @@
 # Digital certificate creation
-![Owncast-Certificate_Manager.drawio.svg](/Images/Owncast-Certificate_Manager.drawio.svg)
+![Owncast-Certificate_Manager.svg](/Images/Owncast-Certificate_Manager.svg)
 
 - [Optional] If you want to use the digital certificate in conjunction with your registered domain,
   - #### Note: You must be in the us-east-1 (N. Virginia) region for use with CloudFront

@@ -1,5 +1,5 @@
 # API Gateway configuration
-![Owncast-API_Gateway.drawio.svg](/Images/Owncast-API_Gateway.drawio.svg)
+![Owncast-API_Gateway.svg](/Images/Owncast-API_Gateway.svg)
 
 - In the API Gateway in the region you chose (the same as the VPC and Subnets), click the Create an API button
   - From the options, choose REST API and click the Build button

@@ -1,5 +1,5 @@
 # Criação das instâncias EC2
-![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+![Owncast-Instances.svg](/Images/Owncast-Instances.svg)
 
 - Instância EC2 para o servidor de Proxy (utilizando HAProxy)
   - Application and OS Image: Ubuntu

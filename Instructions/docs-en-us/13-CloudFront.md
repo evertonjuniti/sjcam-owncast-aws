@@ -1,5 +1,5 @@
 # CloudFront Configuration
-![Owncast-CloudFront.drawio.svg](/Images/Owncast-CloudFront.drawio.svg)
+![Owncast-CloudFront.svg](/Images/Owncast-CloudFront.svg)
 
 
 

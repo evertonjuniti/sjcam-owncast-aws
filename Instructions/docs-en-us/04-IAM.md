@@ -1,5 +1,5 @@
 # Configuring IAM policies, roles, and users
-![Owncast-IAM.drawio.svg](/Images/Owncast-IAM.drawio.svg)
+![Owncast-IAM.svg](/Images/Owncast-IAM.svg)
 
 - In the Policies menu, create a new Policy, this will be the main policy for Owncast
   - Instead of selecting with the Visual editor, switch to the JSON editor.

@@ -1,5 +1,5 @@
 # Creating an S3 Bucket
-![Owncast-Bucket.drawio.svg](/Images/Owncast-Bucket.drawio.svg)
+![Owncast-Bucket.svg](/Images/Owncast-Bucket.svg)
 
 - [Optional] Create an S3 bucket in the same region as your network structure (where you have your VPC and subnets) to serve your website (if you have one). This can be used for the HTML page of this repository to access recorded videos
   - Bucket name: Must be a globally unique name, one that reflects the hosting of your static website.

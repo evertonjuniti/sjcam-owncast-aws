@@ -1,5 +1,5 @@
 # Network configuration
-![Owncast-Network.drawio.svg](/Images/Owncast-Network.drawio.svg)
+![Owncast-Network.svg](/Images/Owncast-Network.svg)
 
 - I chose the sa-east-1 region for my structure, you can choose whatever you prefer
 - I'm using my account's default VPC

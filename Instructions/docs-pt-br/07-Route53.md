@@ -1,5 +1,5 @@
 # Configuração do Route 53
-![Owncast-Route_53.drawio.svg](/Images/Owncast-Route_53.drawio.svg)
+![Owncast-Route_53.svg](/Images/Owncast-Route_53.svg)
 
 - [Opcional] Registre um domínio, esse é um requisito opcional caso você queira acessar os recursos por um domínio seu
   - Vá no menu Registered domains no Route 53 e clique no botão Register domains

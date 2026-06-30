@@ -1,5 +1,5 @@
 # Lambda function configuration
-![Owncast-Lambda.drawio.svg](/Images/Owncast-Lambda.drawio.svg)
+![Owncast-Lambda.svg](/Images/Owncast-Lambda.svg)
 
 ### Important note: I'm assuming that in this optional section, you have your own domain in Route 53. This is important because the Lambda function generates cookies and also performs CORS checks.
 

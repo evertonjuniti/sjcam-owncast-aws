@@ -1,5 +1,5 @@
 # Proxy EC2 instance configuration
-![Owncast-Instances.drawio.svg](/Images/Owncast-Instances.drawio.svg)
+![Owncast-Instances.svg](/Images/Owncast-Instances.svg)
 
 In this step, we will configure the EC2 instance for the proxy to install and configure HAProxy
 

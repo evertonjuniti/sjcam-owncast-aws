@@ -15,7 +15,7 @@
 - In this repository, you'll find information and a detailed step-by-step guide to creating an infrastructure on AWS to have a streaming server using the open-source Owncast tool. You'll also be able to watch both live streaming and historical stored videos, with access control and security requirements to reduce the risk of video exposure. It also includes how to configure your SJCAM SJ11 to use this streaming server
 
 ## Desenho da solução | Solution design
-![Owncast-Resources-Map.drawio.svg](/Images/Owncast-Resources-Map.drawio.svg)
+![Owncast-Resources-Map.svg](/Images/Owncast-Resources-Map.svg)
 
 > [pt-br]
 - Tudo que estiver escrito em vermelho são dados de exemplo que usei em meu ambiente ou são placeholders para que você substitua pelo valor correto do seu ambiente AWS. Talvez seja melhor você fazer o download da imagem acima e abrir em outra ferramenta (que não o browser), dado que são muitos detalhes contidos na imagem
@@ -31,7 +31,7 @@
 > [en-us]
 - The SJCAM SJ11 camera uses the RTMP protocol (via port 1935) for connectivity with the Proxy server, which in turn connects to the Owncast server, which makes it possible to record video segments (.ts files) in the Bucket
 
-![Owncast-Camera.drawio.svg](/Images/Owncast-Camera.drawio.svg)
+![Owncast-Camera.svg](/Images/Owncast-Camera.svg)
 
 #### Visualização dos vídeos | Video viewing
 > [pt-br]
@@ -40,7 +40,7 @@
 > [en-us]
 - Through the HTML page, you must log in (via Cognito) to access resources. An API is used to display server execution status, turn servers on or off, and list available videos, including the option to watch live. Since video segments are served via cookies, CloudFront's distribution bridges this gap with the S3 bucket where the video segments are stored
 
-![Owncast-VideoPlayer.drawio.svg](/Images/Owncast-VideoPlayer.drawio.svg)
+![Owncast-VideoPlayer.svg](/Images/Owncast-VideoPlayer.svg)
 
 #### Administração do servidor Owncast | Owncast server administration
 > [pt-br]
@@ -49,7 +49,7 @@
 > [en-us]
 - Access to the Owncast administration page is accessed via a Proxy server that forwards to the Owncast server. The page with the player, although accessible, does not display live streaming when the camera is transmitting through a configuration on the Proxy server.
 
-![Owncast-Administration.drawio.svg](/Images/Owncast-Administration.drawio.svg)
+![Owncast-Administration.svg](/Images/Owncast-Administration.svg)
 
 ## Implantando a solução | Deploying the solution
 > [pt-br]

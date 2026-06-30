@@ -1,5 +1,5 @@
 # Creation of Secrets
-![Owncast-SecretsManager.drawio.svg](/Images/Owncast-SecretsManager.drawio.svg)
+![Owncast-SecretsManager.svg](/Images/Owncast-SecretsManager.svg)
 
 There is a prerequisite for one of the secrets, which involves generating an RSA private and public key pair.
 
