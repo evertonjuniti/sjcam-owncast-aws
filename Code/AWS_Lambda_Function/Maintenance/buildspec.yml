@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "No external dependencies required (boto3 is built-in to Lambda runtime)"
+
+  build:
+    commands:
+      - echo "Packaging Lambda..."
+      - cd src
+      - zip -r9 ../lambda_package.zip .
+      - cd ..
+      - echo "Deploying to Lambda..."
+      - aws lambda update-function-code --function-name owncastMaintenance --zip-file fileb://lambda_package.zip
+
+artifacts:
+  files:
+    - lambda_package.zip

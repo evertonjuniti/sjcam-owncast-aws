@@ -1,0 +1,11 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowEventBridgeSchedulerToStopEC2Instances",
+            "Effect": "Allow",
+            "Action": "ec2:StopInstances",
+            "Resource": "*"
+        }
+    ]
+}

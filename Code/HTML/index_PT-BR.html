@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Owncast Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/oidc-client-ts@2.4.0/dist/browser/oidc-client-ts.min.js"></script>
+
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       html, body { height: 100%; }
@@ -21,7 +26,7 @@
         max-width: 600px;
         text-align: center;
       }
-      #loginBtn, #logoutBtn, #instanceBtn, #consultarStatusBtn, #refreshBtn {
+      #loginBtn, #logoutBtn, #instanceBtn, #statusBtn, #refreshBtn {
         font-size: 1rem;
         padding: 0.5rem 1rem;
         border: none;
@@ -50,36 +55,27 @@
         border-radius: 0.5rem;
         background-color: #000;
       }
-      .field { margin: 0.5rem 0; }
-      input[type="email"], input[type="password"] {
-        width: 90%; max-width: 320px;
-        padding: 0.6rem; border-radius: 0.4rem;
-        border: 1px solid #555; background:#222; color:#eee;
-      }
       .hint { opacity: .8; font-size: .9rem; margin-top:.5rem;}
     </style>
   </head>
   <body>
     <button id="logoutBtn">Logout</button>
+
     <div id="auth">
       <h2>Login</h2>
-      <div class="field">
-        <input id="email" type="email" placeholder="Seu e-mail" autocomplete="username" />
-      </div>
-      <div class="field">
-        <input id="password" type="password" placeholder="Sua senha" autocomplete="current-password" />
-      </div>
       <button id="loginBtn">Entrar</button>
-      <div class="hint">Somente usuários autorizados podem acessar.</div>
+      <div class="hint">Você será redirecionado ao Hosted UI do Cognito.</div>
     </div>
 
     <div id="serverArea" style="display:none">
       <h2>Servidor Owncast</h2>
-      <p>Status do servidor: <label id="serverStatus">Carregando...</label> <button id="consultarStatusBtn">Consultar status do servidor</button></p>
+      <p>Status do servidor: <label id="serverStatus">Carregando...</label> <button id="statusBtn">Consultar status do servidor</button></p>
       <br />
       <button id="instanceBtn">Ligar servidor</button>
     </div>
+
     <br />
+
     <div id="playerArea" style="display:none">
       <button id="refreshBtn" style="margin-left:0.5rem;">Atualizar lista de vídeos</button>
       <label for="videoSelector" style="margin: 0 0.5rem 0 1rem;">Vídeo:</label>
@@ -89,57 +85,44 @@
     </div>
 
     <script type="module">
-      import { Amplify } from 'https://esm.sh/aws-amplify@6.15.5';
-      import {
-              signIn,
-              signOut,
-              confirmSignIn,
-              getCurrentUser,
-              fetchAuthSession
-            } from 'https://esm.sh/aws-amplify@6.15.5/auth';
       const API_BASE = 'https://[YOUR_OWNCAST_API_BASE_URL]';
-
+      
       // ================== CONFIG COGNITO ==================
       const COGNITO_REGION = "[YOUR_COGNITO_REGION]";
-      const USER_POOL_ID = "[YOUR_COGNITO_USER_POOL_ID]";
-      const USER_POOL_WEB_CLIENT_ID = "[YOUR_COGNITO_USER_POOL_WEB_CLIENT_ID]";
+      const CLIENT_ID = "[YOUR_COGNITO_USER_POOL_WEB_CLIENT_ID]";
+      const REDIRECT_URI = "[THE_HTTPS_URL_OF_THIS_PAGE]";
+      const AUTHORITY = "https://cognito-idp.[YOUR_REGION].amazonaws.com/[YOUR_COGNITO_USER_POOL_ID]";
       // ====================================================
 
-      Amplify.configure({
-        Auth: {
-          Cognito: {
-            userPoolId: USER_POOL_ID,
-            userPoolClientId: USER_POOL_WEB_CLIENT_ID,
-            region: COGNITO_REGION,
-            loginWith: { email: true, username: false, phone: false }
-          }
-        }
+      const {
+        UserManager,
+        WebStorageStateStore,
+        Log
+      } = window.oidc;
+
+      const userManager = new UserManager({
+        authority: AUTHORITY,
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+        response_type: "code",
+        scope: "openid email",
+        userStore: new WebStorageStateStore({ store: window.sessionStorage }),
+        automaticSilentRenew: false
       });
 
       const logoutBtn           = document.getElementById('logoutBtn');
       const loginBtn            = document.getElementById('loginBtn');
-      const emailInput          = document.getElementById('email');
-      const passwordInput       = document.getElementById('password');
       const authDiv             = document.getElementById('auth');
       const serverArea          = document.getElementById('serverArea');
       const serverStatus        = document.getElementById('serverStatus');
       const instanceBtn         = document.getElementById('instanceBtn');
-      const consultarStatusBtn  = document.getElementById('consultarStatusBtn');
+      const statusBtn           = document.getElementById('statusBtn');
       const playerArea          = document.getElementById('playerArea');
       const videoEl             = document.getElementById('video');
       const selector            = document.getElementById('videoSelector');
       const refreshBtn          = document.getElementById('refreshBtn');
       let hlsInstance;
       let currentServerStatus = null;
-
-      async function getIdToken() {
-        try {
-          const { tokens } = await fetchAuthSession();
-          return tokens?.idToken?.toString() ?? null;
-        } catch {
-          return null;
-        }
-      }
 
       async function showAuthedUI() {
         authDiv.style.display    = 'none';
@@ -153,21 +136,51 @@
         serverArea.style.display = 'none';
         playerArea.style.display = 'none';
       }
+      async function getUser() {
+        const u = await userManager.getUser();
+        return u ?? null;
+      }
+      async function getIdToken() {
+        const u = await getUser();
+        return u?.id_token ?? null;
+      }
+
+      userManager.events.addAccessTokenExpired(async () => {
+        console.warn("ID/Access token expirado");
+        try {
+          await userManager.signinRedirect();
+        } catch (e) {
+          console.error(e);
+        }
+      });
 
       (async () => {
-        try {
-          const { tokens } = await fetchAuthSession();
-          if (tokens?.idToken) {
-            await showAuthedUI();
-            await updateServerStatus();
-            await populateVideos();
-          } else {
-            showLoggedOutUI();
+        if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
+          try {
+            await userManager.signinCallback();
+            window.history.replaceState({}, document.title, REDIRECT_URI);
+          } catch (e) {
+            console.error("Erro no signinCallback:", e);
           }
-        } catch {
+        }
+
+        const user = await getUser();
+        if (user?.id_token) {
+          await showAuthedUI(user);
+          await updateServerStatus();
+          await populateVideos();
+        } else {
           showLoggedOutUI();
         }
       })();
+
+      loginBtn.onclick = async () => {
+        try {
+          await userManager.signinRedirect();
+        } catch (e) {
+          alert('Erro ao redirecionar para login: ' + (e?.message || e));
+        }
+      };
 
       logoutBtn.onclick = async () => {
         try {
@@ -175,51 +188,6 @@
           showLoggedOutUI();
         } catch (e) {
           alert('Erro ao deslogar: ' + (e && e.message ? e.message : e));
-        }
-      };
-
-      loginBtn.onclick = async () => {
-        const email = emailInput.value.trim();
-        const pass  = passwordInput.value;
-        if (!email || !pass) { alert('Informe e-mail e senha'); return; }
-        try {
-          const session0 = await fetchAuthSession().catch(() => null);
-          if (session0?.tokens?.idToken) {
-            await showAuthedUI();
-            await updateServerStatus();
-            await populateVideos();
-            return;
-          }
-
-          const res = await signIn({ username: email, password: pass });
-
-          if (res?.nextStep?.signInStep === 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED') {
-            const newPass = prompt('Defina a sua NOVA senha (requisitos do Cognito se aplicam):');
-            if (!newPass) return;
-
-            await confirmSignIn({challengeResponse: newPass});
-          }
-          const { tokens } = await fetchAuthSession();
-          if (!tokens?.idToken) throw new Error('Falha ao obter sessão após login');
-
-          await showAuthedUI();
-          await updateServerStatus();
-          await populateVideos();
-        } catch (e) {
-          const msg = e?.message || String(e);
-          if (/already\s*signed\s*in/i.test(msg) || e?.name === 'UserAlreadyAuthenticatedException') {
-            await showAuthedUI();
-            await updateServerStatus();
-            await populateVideos();
-            return;
-          }
-          if (e?.name === 'UserNotConfirmedException') {
-            alert('Erro ao autenticar: Usuário não confirmado no Cognito.');
-          } else if (e?.name === 'InvalidPasswordException') {
-            alert('Erro ao autenticar: A nova senha não atende à política do Cognito.');
-          } else {
-            alert('Erro ao autenticar: ' + msg);
-          }
         }
       };
 
@@ -235,7 +203,7 @@
       });
 
       selector.addEventListener('change', updateStream);
-      consultarStatusBtn.addEventListener('click', updateServerStatus);
+      statusBtn.addEventListener('click', updateServerStatus);
 
       instanceBtn.addEventListener('click', async () => {
         if (!currentServerStatus) return;

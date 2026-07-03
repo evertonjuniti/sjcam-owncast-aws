@@ -1,0 +1,162 @@
+# CloudFront Configuration
+![Owncast-CloudFront.svg](/Images/Owncast-CloudFront.svg)
+
+- [Optional] If you have created a page with a video player to watch videos stored in the S3 bucket, you can create a CloudFront distribution to access both the page and the video files.
+  - In CloudFront, under Distributions, click the Create distribution button.
+    - Get started
+      - Choose a plan: Due to certain features we will be using, select the "Pay as you go" option and then click the Next button.
+      - Distribution name: Give your new CloudFront distribution a name.
+      - Description - optional: You can provide a description for your distribution, but it is optional; you can leave this field blank if you wish.
+      - Distribution type: Select the "Single website or app" option.
+      - Domain: If you purchased a domain via Route 53, enter the domain in this field (e.g., example.com) and then click the Check domain button.
+      - You should see a message like "Domain managed by Route 53" with a green background; this indicates that the domain is in your AWS account, allowing CloudFront to manage DNS for you.
+      - You can add subdomains if you have any (e.g., www.example.com). Note that you only need to enter the subdomain name; the domain itself (e.g., .example.com) will already be specified.
+      - Tags - optional: You can optionally include tags to help manage this AWS resource.
+      - Click the Next button.
+    - Specify origin
+      - Origin type: if you created an S3 bucket containing the static site content, choose the "Amazon S3" option
+      - S3 origin: click the "Browse S3" button and select the bucket for the static website
+      - After selecting it, AWS will identify the bucket as containing static site content and suggest using an S3 website endpoint; however, that option only works if the S3 bucket is public—which is not the case here—so you do not need to do anything; let's move to the next step. To reiterate: do not click the "Use website endpoint" button
+      - Origin path - optional: you can leave this blank
+      - Origin access: select the "Origin access control settings (recommended)" option
+      - Origin settings: select the "Use recommended origin settings" option
+      - Cache settings: select the "Use recommended cache settings tailored to serving S3 content" option
+      - Click the "Next" button
+    - Enable security
+      - Web Application Firewall (WAF): to save on costs, leave the "Do not enable security protections" option selected and click the "Next" button
+    - Get TLS certificate
+      - If you have purchased a domain and requested a digital certificate, the certificate associated with the domain specified in this CloudFront distribution will appear pre-selected; otherwise, you will need to create a new certificate
+      - Assuming the certificate already exists, click the "Next" button
+    - Review and create
+      - You can review all settings and edit them if necessary; after reviewing, click the "Create distribution" button
+    - To allow CloudFront to access the static website content in the S3 Bucket, you must do the following:
+      - Open a new browser tab and navigate to the S3 service
+      - Find the S3 Bucket associated with the static website and click on it
+      - Go to the "Permissions" tab
+      - Under "Bucket policy," click the "Edit" button
+      - Use the template found at [Code -> AWS_S3_Bucket -> Bucket_policy.txt](Code/AWS_S3_Bucket/Bucket_policy.txt) and replace the tags "YOUR_S3_BUCKET_NAME", "YOUR_ACCOUNT", and "YOUR_CLOUD_FRONT_DISTRIBUTION_ARN_ID" (generated when you created the CloudFront distribution) with the values ​​corresponding to your S3 Bucket, AWS account, and CloudFront distribution
+      - Click the "Save changes" button, then close the browser tab containing the S3 service to return to the CloudFront service
+    - After creating the new CloudFront distribution, you will see the dashboard with the distribution's details; click the "Origins" tab.
+      - Select the single Origin listed and click the "Edit" button.
+        - Origin access: select the "Origin access control settings (recommended)" option.
+        - Origin access control: you will need to create one first by clicking the "Create new OAC" button.
+            - Name: this will be pre-filled, but you can change the name if you wish.
+            - Description - optional: you can add a description or leave the field blank.
+            - Signing behavior: select the "Sign requests (recommended)" option.
+            - Click the "Create" button.
+            - After selecting the OAC, note the information indicating that you need to grant CloudFront access via a "policy statement" in the S3 bucket; you can click the "Copy policy" button to save the content—we will add this policy to the Owncast S3 bucket immediately after completing this step.
+        - Click the "Save changes" button.
+    - Adding another origin
+      - Still on the "Origins" tab, click the "Create origin" button
+        - This step is important if you want to serve the Owncast video files from the S3 bucket you configured. Instead of granting direct access to these files or keeping the S3 bucket public, we will make them available via this CloudFront distribution and then apply access rules.
+        - Origin domain: select the S3 bucket where the Owncast files are stored
+        - Origin path - optional: you can leave this blank
+        - Name: this will be pre-filled, but you can change the name if you wish
+        - Origin access: select the "Origin access control settings (recommended)" option
+        - Origin access control: create a new one by clicking the "Create new OAC" button
+          - Name: this will be pre-filled, but you can change the name if you wish
+          - Description - optional: you can include a description or leave the field blank
+          - Signing behavior: select the "Sign requests (recommended)" option
+          - Click the "Create" button
+            - After selecting the OAC, note the information indicating that you need to grant CloudFront access via a "policy statement" in the S3 bucket. You can click the "Copy policy" button and save the content somewhere; we will add this policy to the Owncast S3 bucket immediately after completing this step.
+        - Add custom header - optional: we won't add any
+        - Enable Origin Shield: for cost reasons, keep the "No" option selected
+        - Additional settings: no need to change any of the default settings
+        - Click the "Create origin" button
+    - Configure the S3 bucket policy
+      - In another browser tab, go to the S3 service
+        - Find the S3 bucket associated with Owncast and click on it to view the bucket settings
+          - Go to the "Permissions" tab
+          - Under "Bucket policy," click the "Edit" button
+          - Paste the policy content you copied when creating the OAC (Origin Access Control)
+          - Click the "Save changes" button
+        - This step is necessary for CloudFront to access the S3 bucket content for distribution
+      - You can now close the S3 service browser tab; we will return to CloudFront
+    - Configure behaviors
+      - Go to the "Behaviors" tab
+        - Click the "Create behavior" button
+          - Path pattern: /hls/*
+          - Origin and origin groups: select the S3 bucket associated with Owncast
+          - Compress objects automatically: you can keep the "Yes" option selected
+          - Viewer protocol policy: you can keep the "Redirect HTTP to HTTPS" option selected
+          - Allowed HTTP methods: select the "GET, HEAD, OPTIONS" option
+            - Cache HTTP methods: you can leave this unselected
+          - Restrict viewer access: select the "Yes" option
+            - Trusted authorization type: you can keep the "Trusted authorization type" option selected
+            - Add key groups: you should have created a Key Group and a Public Key when configuring the Secrets; therefore, click the combo box and select the Key Group you created earlier
+          - Cache key and origin requests: you can keep the "Cache policy and origin request policy (recommended)" option selected
+            - Cache policy: you can keep the "CachingOptimized" option selected
+            - Origin request policy - optional: select the "CORS-S3Origin" option
+            - Response headers policy - optional: initially, you will need to create one by clicking "Create response headers policy"
+              - Name: give your new response headers policy a name (suggestion: AllowCORSFromPlayer)
+              - Description - optional: you can provide a description for your response headers policy, but it is optional; you can leave this field blank if you wish
+              - Cross-origin resource sharing (CORS) - optional: enable this option
+                - Access-Control-Allow-Origin: select the "Customize" option
+                  - Add origins: click the "Add item" button and enter your domain address with the HTTPS protocol (e.g., https://example.com)
+                - Access-Control-Allow-Headers: select the "Customize" option
+                  - Add headers: click the "Add item" button and enter "Authorization"
+                    - click the "Add item" button again and enter "Cookie" on the new line
+                    - click the "Add item" button again and enter "Content-Type" on the new line
+                - Access-Control-Allow-Methods: select the "Customize" option
+                  - Add HTTP methods: select the "GET", "HEAD", and "OPTIONS" options
+                - Access-Control-Expose-Headers: keep the "None" option selected
+                - Access-Control-Max-Age (seconds): you can keep the default value of "600"
+                - Access-Control-Allow-Credentials: keep selected
+                - Origin override: keep selected (default)
+              - Security headers - optional: you can leave all boxes unchecked
+              - Custom headers - optional: no need to include any
+              - Remove headers - optional: no need to include any
+              - Server-Timing header - optional: you can keep it disabled (default)
+              - Click the "Create" button; once created, you can close the browser tab that opened for the Response Header creation
+              - Click the "refresh" button next to the field to update the list with the newly created Response Header, then select the Response Header
+          - Additional settings: leave as is
+          - Function associations - optional: leave as is ("No association" for all items)
+          - Click the "Create behavior" button
+        - We will create another rule; click the "Create behavior" button again
+          - Path pattern: /video/*
+          - Origin and origin groups: select the S3 bucket associated with the static website
+          - Compress objects automatically: you can keep the "Yes" option selected
+          - Viewer protocol policy: you can keep the "Redirect HTTP to HTTPS" option selected
+          - Allowed HTTP methods: select the "GET, HEAD, OPTIONS" option
+            - Cache HTTP methods: you can leave this unselected
+          - Restrict viewer access: you can keep the "No" option selected
+          - Cache key and origin requests: you can keep the "Cache policy and origin request policy (recommended)" option selected
+            - Cache policy: you can keep the "CachingOptimized" option selected
+            - Origin request policy - optional: no need to select any option (default)
+            - Response headers policy - optional: no need to select any option (default)
+          - Additional settings: you can leave as is
+          - Function associations - optional: you can leave as is ("No association" for all items)
+          - Click the "Create behavior" button
+        - We will modify the existing rule; select the behavior with the "Path pattern" value "Default (*)" and click the "Edit" button
+          - Compress objects automatically: select the "No" option
+          - Click the "Save changes" button
+    - That's it; the CloudFront distribution will be available in a few minutes. It is important to note that every change to the CloudFront configuration triggers a new CloudFront deployment, which can take a few minutes.
+  - In the distribution view, under the "Details" section, you will find the "Distribution domain name"; you can copy this value, open a new browser tab, and paste the address to test it. You might initially receive an "Access Denied" message.
+    - Try creating a basic HTML page with any content, naming the file index.html, and uploading it to the S3 bucket hosting your static website; then, try accessing this file via the CloudFront URL. Example: https://xxxxxxxxxxxxxx.cloudfront.net/index.html
+    - The "Behavior" configuration is designed to retrieve any page located at the bucket root from the static website S3 bucket using the "Default (*)" rule.
+    - There is another rule pointing to a /video route; therefore, it is recommended that you use the page template found at [Code -> HTML -> index_EN-US.html](Code/HTML/index_EN-US.html), make the necessary modifications, and upload it to the /video folder in the static website's S3 bucket. This way, if you access https://xxxxxxxxxxxxxx.cloudfront.net/video/index.html, you will be able to view the page.
+      - This page is already set up to use AWS Cognito for login and to call API Gateway (triggering a Lambda function) to retrieve video files for playback.
+  - To use your own domain instead of https://xxxxxxxxxxxxxx.cloudfront.net, go to the Route 53 service
+    - Go to the Hosted Zone you created earlier
+    - On the "Records" tab, click the "Create record" button
+      - Record name: leave blank
+      - Record type: keep the "A - Routes traffic to an IPv4 address and some AWS resources" option selected
+      - Alias: enable this option
+      - Route traffic to
+        - Choose endpoint: select "Alias ​​to CloudFront distribution"
+        - Choose distribution: select the CloudFront distribution we created
+      - Routing policy: keep the "Simple routing" option selected
+      - Click the "Create records" button
+    - Click the "Create record" button again
+      - Record name: leave blank
+      - Record type: keep the "AAAA - Routes traffic to an IPv6 address and some AWS resources" option selected
+      - Alias: enable this option
+      - Route traffic to
+        - Choose endpoint: select "Alias ​​to CloudFront distribution"
+        - Choose distribution: select the CloudFront distribution we created
+      - Routing policy: keep the "Simple routing" option selected
+      - Click the "Create records" button
+    - Done! Now you can test directly using your domain address; for example, instead of using the URL https://xxxxxxxxxxxxxx.cloudfront.net/video/index.html, you can use your domain, such as https://example.com/video/index.html
+
+---
+[⬅️ Previous: API Gateway Configuration](13-API-Gateway.md) | [🏠 Index](../README.md)
