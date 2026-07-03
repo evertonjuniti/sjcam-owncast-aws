@@ -11,7 +11,7 @@
   - You will need to provide contact information as the person responsible for the domain. You can change the other contact types if you wish or keep the default options already selected
   - Finally, in the Terms and Conditions section, read the terms and conditions, select the checkbox, and then click the Submit button to purchase the domain
 
-- [Optional] Create a hosted zone. This is an optional requirement if you want to use your domain to register how you route traffic for your domain to the services we'll create in this guide
+- [Optional] Create a hosted zone in case Route53 did not automatically create it in the previous step. This is an optional requirement if you want to use your domain to register how you route traffic for your domain to the services we'll create in this guide
   - Go to the Hosted Zones menu in Route 53 and click the Create Hosted Zone button
     - Domain Name: Enter the name of your domain (this can be the one you purchased if you chose to register a domain)
     - Type: Public hosted zone (to allow calls/internet traffic)

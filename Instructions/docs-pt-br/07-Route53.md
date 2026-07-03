@@ -11,7 +11,7 @@
     - Você precisará informar dados cadastrais de registro de contato como pessoa responsável pelo domínio, você pode mudar os demais tipos de contato se quiser ou manter as opções padrão já selecionadas
     - Por fim em Terms and conditions, leia as condições e marque a caixa de seleção e depois clique no botão Submit para comprar o domínio
 
-- [Opcional] Crie uma hosted zone, esse é um requisito opcional caso você queira usar seu domínio para registrar como você roteia tráfego para seu domínio aos serviços que criaremos com este manual
+- [Opcional] Crie uma hosted zone caso o Route53 não tenha criado automaticamente no passo anterior, esse é um requisito opcional caso você queira usar seu domínio para registrar como você roteia tráfego para seu domínio aos serviços que criaremos com este manual
   - Vá no menu Hosted zones no Route 53 e clique no botão Create hosted zone
     - Domain name: indique o nome do domínio que você possui (pode ser o que você comprou caso tenha optado por registrar um domínio)
     - Type: Public hosted zone (para permitir chamadas/tráfego da internet)
