@@ -3,7 +3,7 @@
 ![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazonaws&logoColor=white)
 ![Owncast](https://img.shields.io/badge/Owncast-Self--Hosted-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNFY4bDYgNHoiLz48L3N2Zz4=)
 ![RTMP](https://img.shields.io/badge/Protocol-RTMP-blue)
-![License](https://img.shields.io/github/license/EvertonJO/sjcam-owncast-aws)
+![License](https://img.shields.io/github/license/evertonjuniti/sjcam-owncast-aws)
 ![Amazon S3](https://img.shields.io/badge/Storage-Amazon%20S3-569A31?logo=amazons3&logoColor=white)
 ![CloudFront](https://img.shields.io/badge/CDN-CloudFront-FF9900?logo=amazonaws&logoColor=white)
 ![Amazon Cognito](https://img.shields.io/badge/Auth-Amazon%20Cognito-DD344C?logo=amazonaws&logoColor=white)
