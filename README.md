@@ -1,4 +1,14 @@
 # sjcam-owncast-aws
+
+![AWS](https://img.shields.io/badge/AWS-Cloud-orange?logo=amazonaws&logoColor=white)
+![Owncast](https://img.shields.io/badge/Owncast-Self--Hosted-blueviolet?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNFY4bDYgNHoiLz48L3N2Zz4=)
+![RTMP](https://img.shields.io/badge/Protocol-RTMP-blue)
+![License](https://img.shields.io/github/license/EvertonJO/sjcam-owncast-aws)
+![Amazon S3](https://img.shields.io/badge/Storage-Amazon%20S3-569A31?logo=amazons3&logoColor=white)
+![CloudFront](https://img.shields.io/badge/CDN-CloudFront-FF9900?logo=amazonaws&logoColor=white)
+![Amazon Cognito](https://img.shields.io/badge/Auth-Amazon%20Cognito-DD344C?logo=amazonaws&logoColor=white)
+![AWS Lambda](https://img.shields.io/badge/Serverless-AWS%20Lambda-FF9900?logo=awslambda&logoColor=white)
+
 > [pt-br]
 - Recursos de infraestrutura da AWS para oferecer transmissão ao vivo privada a serem usados com a câmera SJCAM SJ11
 
@@ -59,3 +69,6 @@
 
 > [en-us]
 - Access the [Instructions](Instructions/README.md) folder of this repository to follow the step-by-step installation and configuration of the AWS environment and the SJCAM SJ11 camera
+
+## Keywords
+`live streaming` `self-hosted` `owncast` `aws` `sjcam` `sjcam-sj11` `rtmp` `cloudfront` `amazon-s3` `cognito` `aws-lambda` `eventbridge` `api-gateway` `video-recording` `video-streaming` `privacy` `streaming-server` `hls` `ec2` `route53`
