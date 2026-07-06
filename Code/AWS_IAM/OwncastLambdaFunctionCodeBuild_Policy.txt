@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "UpdateExistingLambdaCode",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction"
+      ],
+      "Resource": [
+        "arn:aws:lambda:sa-east-1:[YOUR_ACCOUNT]:function:[OWNCAST_PLAYLIST_LAMBDA]",
+        "arn:aws:lambda:sa-east-1:[YOUR_ACCOUNT]:function:[OWNCAST_MAINTENANCE_LAMBDA]"
+      ]
+    }
+  ]
+}

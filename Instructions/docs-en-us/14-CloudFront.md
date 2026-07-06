@@ -159,4 +159,4 @@
     - Done! Now you can test directly using your domain address; for example, instead of using the URL https://xxxxxxxxxxxxxx.cloudfront.net/video/index.html, you can use your domain, such as https://example.com/video/index.html
 
 ---
-[⬅️ Previous: API Gateway Configuration](13-API-Gateway.md) | [🏠 Index](../README.md)
+[⬅️ Previous: API Gateway Configuration](13-API-Gateway.md) | [🏠 Index](../README.md) | [Next: CodePipeline Configuration ➡️](15-CodePipeline.md)

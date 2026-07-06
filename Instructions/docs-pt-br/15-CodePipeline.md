@@ -1,0 +1,205 @@
+# Configuração do CloudFront
+![Owncast-CodePipeline.svg](/Images/Owncast-CodePipeline.svg)
+
+### [Opcional] Se você deseja criar uma automação para fazer o deploy das funções Lambda, você pode usar o CodePipeline. Aqui para exemplificar o funcionamento iremos atualizar ambas as funções Lambda por esta automação, mas cada um por um repositório diferente.
+
+#### Aqui eu pressuponho que você já está bem familiarizado com o Gitlab ou o Github e também pressuponho que você já tenha a função Lambda criada e que só deseje automatizar o processo de atualizar o código-fonte
+
+- Pré-requisito: criar uma Role com permissão para atualizar as funções Lambda
+  - Vá no serviço IAM
+    - No menu à esquerda em "Access Management", clique no item "Policies"
+    - Clique no botão "Create policy"
+    - Policy editor: selecione a opção "JSON"
+    - No campo da policy, cole o conteúdo JSON que você pode encontrar neste repositõrio em [Code -> AWS_IAM -> OwncastLambdaFunctionCodeBuild_Policy.txt](Code/AWS_IAM/OwncastLambdaFunctionCodeBuild_Policy.txt)
+      - Substitua a tag "YOUR_ACCOUNT" pela identificação da sua conta AWS, "OWNCAST_PLAYLIST_LAMBDA" pelo nome da sua função Lambda que serve como API e "OWNCAST_MAINTENANCE_LAMBDA" pelo nome da sua função Lambda de manutenção
+    - Policy name: dê um nome à esta policy nova, sugestão OwncastLambdaFunctionCodeBuildPolicy
+    - Add tags - optional: se desejado, inclua tags para sua policy nova
+    - Clique no botão "Create policy"
+
+- Atualização da função Lambda de playlist e instâncias via Gitlab
+  - Para este segundo exemplo, crie um repositório privado no Gitlab
+    - Este repositório precisa ter uma estrutura apenas com 1 pasta e 2 arquivos, sendo:
+      - src (pasta no root)
+        - lambda_function.py (arquivo dentro da pasta src)
+      - buildspec.yml (arquivo no root)
+    - Para este exemplo, você encontra exatamente esta estrutura em [Code -> AWS_Lambda_Function -> Playlist](Code/AWS_Lambda_Function/Playlist), você pode copiar a pasta e os arquivos que estão lá e fazer o upload em seu repositório
+  - Vá para o serviço AWS chamado CodePipeline
+    - No menu lateral à esquerda, vá em "Settings" e clique no subitem "Connections"
+      - Clique no botão "Create connection"
+      - Select a provider: selecione a opção Gitlab
+      - Connection name: indique um nome de identificação para a conexão (sugestão: gitlab_connection)
+      - Tags - optional: você pode incluir tags se desejar
+      - Clique no botão "Connect to Gitlab"
+        - ##### Atenção: antes de clicar neste botão, certifique-se de que você esteja logado em sua conta no Gitlab
+        - Você será redirecionado para uma tela para autorizar a conexão entre sua conta da AWS e a sua conta do Gitlab, autorize essa conexão e prossiga
+      - Na próxima tela que aparecer, clique no botão "Connect"
+      - Use this connection in region: selecione a region em que está seu workload
+      - Há três opçôes aqui:
+        - Set up Github Actions self-hosted runners
+        - Start builds from your repositories
+        - Trigger a release
+      - Escolha a opção "Trigger a release"
+      - Choose creation option
+        - Category: selecione a opção "Build custom pipeline"
+        - Clique no botão "Next"
+      - Pipeline settings
+        - Pipeline name: dê um nome para sua pipeline, sugestão "OwncastPlaylistLambdaFunctionPipeline"
+        - Execution mode: pode manter selecionada a opção "Queued"
+        - Service role: selecione a opção "New service role"
+        - Role name: dê um nome para a nova rola, sugestão "OwncastPlaylistLambdaFunctionCodePipelineRole"
+        - Allow AWS CodePipeline to create a service role so it can be used with this new pipeline: mantenha esta opção marcada
+        - Advanced settings: não é necessário alterar nada
+        - Clique no botão "Next"
+      - Source
+        - Source provider: selecione a opção "Gitlab"
+        - Connection: selecione a connection de Github criada anteriormente
+        - Repository name: selecione o repositório da função lambda de Playlist
+        - Defaut branch: selecione a branch desejada, geralmente é a branch "main"
+        - Output artifact format: pode manter a opção "CodePipeline default" selecionada
+        - Enable automatic retry on stage failure: pode manter esta opção marcada
+        - Start your pipeline on push and pull request events: pode manter esta opção marcada
+        - Webhook event filters - optional: não é necessário alterar nada
+        - Clique no botão "Next"
+      - Build
+        - Build provider: selecione a opção "Other build providers"
+        - No campo que surgir, selecione a opção "CodeBuild"
+        - Project name: clique no botão "Create project", uma tela se abrirá
+          - Project name: dê um nome ao projeto do CodeBuild, sugestão "OwncastPlaylistLambdaFunctionCodeBuild"
+          - Project type: mantenha selecionada a opção "Default project"
+          - Additional configuration: não é necessário alterar nada
+          - Environment
+            - Provisioning model: mantenha selecionada a opção "On-demand"
+            - Environment image: mantenha selecionada a opção "Managed image"
+            - Compute: mantenha selecionada a opção "EC2"
+            - Running mode: mantenha selecionada a opção "Container"
+            - Operating system: mantenha selecionada a opção "Amazon Linux"
+            - Runtime(s): mantenha selecionada a opção "Standard"
+            - Image: mantenha selecionada a opção que já estiver preenchida
+            - Image version: mantenha selecionada a opção que já estiver preenchida
+            - Service role: selecione a opção "New service role"
+            - Role name: dê um nome para a role, sugestão "OwncastPlaylistLambdaFunctionCodeBuildRole"
+            - Additional configuration: não é necessário alterar nada
+          - Buildspec
+            - Build specifications: selecione a opção "Use a buildspec file"
+            - Buildspec name - optional: digite o valor "buildspec.yml"
+          - Batch configuration: não é necessário alterar nada
+          - Logs: não é necessário alterar nada
+          - Clique no botão "Continue to CodePipeline"
+            - ##### Se der uma mensagem de erro "There is no reference to the window opener.", feche essa janela de criação do projeto do CodeBuild, você terá que ir em Settings -> Connections -> selecionar a connection referente ao Github e refazer os passos à partir da seleção da opção "Trigger a release", quando chegar nesta etapa novamente, selecione o projeto do CodeBuild recém criado
+        - Environment variables - optional: não é necessário adicionar nenhum
+        - Build type: mantenha selecionada a opção "Single build"
+        - Region: pode manter selecionada a region que você geralmente utiliza
+        - Input artifacts: já deverá estar selecionado "SourceArtifact", não é necessário alterar nada
+        - Enable automatic retry on stage failure: pode manter esta opção marcada
+        - Clique no botão "Next"
+      - Test: pode pular esta etapa, clique no botão "Skip test stage"
+      - Deploy: pode pular esta etapa, clique no botão "Skip deploy stage"
+      - Review: clique no botão "Create pipeline"
+      - O pipeline será executado uma primeira vez, é o momento de avaliar se está tudo correto
+      - Você pode mudar o pipeline para adicionar outras coisas, como aprovação manual
+      - ##### Em meu caso, a role não possuía autorização para atualizar a função Lambda, então o step de "Build" deu uma falha, neste caso:
+        - Vá no serviço IAM, em "Access Management" clique em "Roles"
+        - No campo de busca, procure pela role recém criada para o CodeBuild e clique nela
+        - Em "Permissions", clique em "Add permissions" e depois clique em "Attach policies"
+        - No campo de busca, digite o nome da policy criada na parte de pré-requisitos, quando encontrar selecione a policy e clique no botão "Add permission"
+        - Retorne ao serviço do CodePipeline e clique na Pipeline recém executada com falha
+        - No step de "Build" que deu falha, há um botão com o label "Retry failed actions", clique neste botão
+        - Aguarde a nova execução do Build
+        - Esta ação foi necessária pois a role criada no processo inclui as policies necessárias para execução do CodeBuild, mas como o projeto do CodeBuild não sabe qual comando o buildspec.yml possui, a ação de atualização da função Lambda não é inferida automaticamente, por este motivo é necessário adicionar à role a policy criada que terá acesso às funções Lambda deste projeto
+
+- Atualização da função Lambda de manutenção via Github
+  - Para este segundo exemplo, crie um repositório privado no Github
+    - Este repositório precisa ter uma estrutura apenas com 1 pasta e 2 arquivos, sendo:
+      - src (pasta no root)
+        - lambda_function.py (arquivo dentro da pasta src)
+      - buildspec.yml (arquivo no root)
+    - Para este exemplo, você encontra exatamente esta estrutura em [Code -> AWS_Lambda_Function -> Maintenance](Code/AWS_Lambda_Function/Maintenance), você pode copiar a pasta e os arquivos que estão lá e fazer o upload em seu repositório
+  - Vá para o serviço AWS chamado CodePipeline
+    - No menu lateral à esquerda, vá em "Settings" e clique no subitem "Connections"
+      - Clique no botão "Create connection"
+      - Select a provider: selecione a opção Github
+      - Connection name: indique um nome de identificação para a conexão (sugestão: github_connection)
+      - Tags - optional: você pode incluir tags se desejar
+      - Clique no botão "Connect to Github"
+        - ##### Atenção: antes de clicar neste botão, certifique-se de que você esteja logado em sua conta no Github
+        - Você será redirecionado para uma tela para autorizar a conexão entre sua conta da AWS e a sua conta do Github, autorize essa conexão e prossiga
+      - Na próxima tela que aparecer, clique no botão "Install App"
+        - Você será redirecionado para escolher qual conta do Github você quer que seja instalado o "AWS Connector for GitHub", selecione a conta que deseja
+        - Você tem a opção de dar acesso à todos os repositórios que tem em sua conta Github ou escolher repositórios especfíficos, faça sua escolha que desejar e clique no botão "Install & Authorize"
+      - Ao retornar para a AWS, você verá que agora há um código preenchido no campo "App Installation - optional", clique no botão "Connect"
+      - Use this connection in region: selecione a region em que está seu workload
+      - Há três opçôes aqui:
+        - Set up Github Actions self-hosted runners
+        - Start builds from your repositories
+        - Trigger a release
+      - Escolha a opção "Trigger a release"
+      - Choose creation option
+        - Category: selecione a opção "Build custom pipeline"
+        - Clique no botão "Next"
+      - Pipeline settings
+        - Pipeline name: dê um nome para sua pipeline, sugestão "OwncastMaintenanceLambdaFunctionPipeline"
+        - Execution mode: pode manter selecionada a opção "Queued"
+        - Service role: selecione a opção "New service role"
+        - Role name: dê um nome para a nova rola, sugestão "OwncastMaintenanceLambdaFunctionCodePipelineRole"
+        - Allow AWS CodePipeline to create a service role so it can be used with this new pipeline: mantenha esta opção marcada
+        - Advanced settings: não é necessário alterar nada
+        - Clique no botão "Next"
+      - Source
+        - Source provider: selecione a opção "GitHub (via GitHub App)"
+        - Connection: selecione a connection de Github criada anteriormente
+        - Repository name: selecione o repositório da função lambda de Manutenção
+        - Defaut branch: selecione a branch desejada, geralmente é a branch "main"
+        - Output artifact format: pode manter a opção "CodePipeline default" selecionada
+        - Enable automatic retry on stage failure: pode manter esta opção marcada
+        - Start your pipeline on push and pull request events: pode manter esta opção marcada
+        - Webhook event filters - optional: não é necessário alterar nada
+        - Clique no botão "Next"
+      - Build
+        - Build provider: selecione a opção "Other build providers"
+        - No campo que surgir, selecione a opção "CodeBuild"
+        - Project name: clique no botão "Create project", uma tela se abrirá
+          - Project name: dê um nome ao projeto do CodeBuild, sugestão "OwncastMaintenanceLambdaFunctionCodeBuild"
+          - Project type: mantenha selecionada a opção "Default project"
+          - Additional configuration: não é necessário alterar nada
+          - Environment
+            - Provisioning model: mantenha selecionada a opção "On-demand"
+            - Environment image: mantenha selecionada a opção "Managed image"
+            - Compute: mantenha selecionada a opção "EC2"
+            - Running mode: mantenha selecionada a opção "Container"
+            - Operating system: mantenha selecionada a opção "Amazon Linux"
+            - Runtime(s): mantenha selecionada a opção "Standard"
+            - Image: mantenha selecionada a opção que já estiver preenchida
+            - Image version: mantenha selecionada a opção que já estiver preenchida
+            - Service role: selecione a opção "New service role"
+            - Role name: dê um nome para a role, sugestão "OwncastMaintenanceLambdaFunctionCodeBuildRole"
+            - Additional configuration: não é necessário alterar nada
+          - Buildspec
+            - Build specifications: selecione a opção "Use a buildspec file"
+            - Buildspec name - optional: digite o valor "buildspec.yml"
+          - Batch configuration: não é necessário alterar nada
+          - Logs: não é necessário alterar nada
+          - Clique no botão "Continue to CodePipeline"
+            - ##### Se der uma mensagem de erro "There is no reference to the window opener.", feche essa janela de criação do projeto do CodeBuild, você terá que ir em Settings -> Connections -> selecionar a connection referente ao Github e refazer os passos à partir da seleção da opção "Trigger a release", quando chegar nesta etapa novamente, selecione o projeto do CodeBuild recém criado
+        - Environment variables - optional: não é necessário adicionar nenhum
+        - Build type: mantenha selecionada a opção "Single build"
+        - Region: pode manter selecionada a region que você geralmente utiliza
+        - Input artifacts: já deverá estar selecionado "SourceArtifact", não é necessário alterar nada
+        - Enable automatic retry on stage failure: pode manter esta opção marcada
+        - Clique no botão "Next"
+      - Test: pode pular esta etapa, clique no botão "Skip test stage"
+      - Deploy: pode pular esta etapa, clique no botão "Skip deploy stage"
+      - Review: clique no botão "Create pipeline"
+      - O pipeline será executado uma primeira vez, é o momento de avaliar se está tudo correto
+      - Você pode mudar o pipeline para adicionar outras coisas, como aprovação manual
+      - ##### Em meu caso, a role não possuía autorização para atualizar a função Lambda, então o step de "Build" deu uma falha, neste caso:
+        - Vá no serviço IAM, em "Access Management" clique em "Roles"
+        - No campo de busca, procure pela role recém criada para o CodeBuild e clique nela
+        - Em "Permissions", clique em "Add permissions" e depois clique em "Attach policies"
+        - No campo de busca, digite o nome da policy criada na parte de pré-requisitos, quando encontrar selecione a policy e clique no botão "Add permission"
+        - Retorne ao serviço do CodePipeline e clique na Pipeline recém executada com falha
+        - No step de "Build" que deu falha, há um botão com o label "Retry failed actions", clique neste botão
+        - Aguarde a nova execução do Build
+        - Esta ação foi necessária pois a role criada no processo inclui as policies necessárias para execução do CodeBuild, mas como o projeto do CodeBuild não sabe qual comando o buildspec.yml possui, a ação de atualização da função Lambda não é inferida automaticamente, por este motivo é necessário adicionar à role a policy criada que terá acesso às funções Lambda deste projeto
+
+---
+[⬅️ Anterior: Configuração do CloudFront ➡️](14-CloudFront.md) | [🏠 Índice](../README.md)
