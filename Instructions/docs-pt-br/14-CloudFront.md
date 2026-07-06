@@ -159,4 +159,4 @@
     - Pronto! Agora você pode testar diretamente pelo endereço do seu domínio, então como exemplo, ao invés de usar a URL https://xxxxxxxxxxxxxx.cloudfront.net/video/index.html, você pode usar o seu domínio como https://example.com/video/index.html
 
 ---
-[⬅️ Anterior: Configuração do API Gateway](13-API-Gateway.md) | [🏠 Índice](../README.md)
+[⬅️ Anterior: Configuração do API Gateway](13-API-Gateway.md) | [🏠 Índice](../README.md) | [Próximo: Configuração do CodePipeline ➡️](15-CodePipeline.md)

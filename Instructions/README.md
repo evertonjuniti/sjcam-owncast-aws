@@ -37,3 +37,4 @@
 - [Configuração do EventBridge](docs-pt-br/12-EventBridge.md) | [EventBridge Configuration](docs-en-us/12-EventBridge.md)
 - [Configuração do API Gateway](docs-pt-br/13-API-Gateway.md) | [API Gateway Configuration](docs-en-us/13-API-Gateway.md)
 - [Configuração do CloudFront](docs-pt-br/14-CloudFront.md) | [CloudFront Configuration](docs-en-us/14-CloudFront.md)
+- [Configuração do CodePipeline](docs-pt-br/15-CodePipeline.md) | [CloudFront Configuration](docs-en-us/15-CodePipeline.md)
